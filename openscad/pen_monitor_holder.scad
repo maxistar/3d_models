@@ -1,6 +1,14 @@
-    monitor_width=500;
-    monitor_height=300;
-    monitor_depth=20;
+$fn=180;
+
+monitor_width=500;
+monitor_height=300;
+monitor_depth=20;
+
+thing_width  = 35;
+thing_height = 55;
+thing_depth  = 45;
+
+side_thinkness = 3;
 
 
 module monitor() {
@@ -9,18 +17,39 @@ module monitor() {
 }
 
 
-module outline () {
+
+
+module outline (width=35, height=55, depth=45, roundness=5) {
     minkowski() {
-     sphere(5, center = true);
-     
-     cube([30,20, 50], center=true);   
-        
+     sphere(roundness);     
+     cube([width-roundness*2,depth-roundness*2, height-roundness*2], center=true);   
     }
 }
 
 
-translate([0, monitor_depth/2, monitor_height/2]) {
-  outline();
+module main_module() {
+  difference() {
+    translate([0, monitor_depth/2, monitor_height/2]) {
+        difference() {
+          outline(width=thing_width, height = thing_height, depth = thing_depth);
+          outline(width=thing_width-side_thinkness*2, height = thing_height-side_thinkness*2, depth = thing_depth-side_thinkness*2);
+        }
+    }
+    translate([0, 0, monitor_height/2+side_thinkness+thing_height/2])
+      cube([monitor_width, monitor_depth*10, thing_height], center=true);
 }
+}
+
+
+main_module();
+
+/*
+difference() {
+  difference()
+   outline(width=thing_width, height = thing_height, depth = thing_depth);
+   outline(width=thing_width-side_thinkness*2, height = thing_height-side_thinkness*2, depth = thing_depth-side_thinkness*2);
+  cube(100, 100, 100);
+}
+*/
 
 monitor();
