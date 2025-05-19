@@ -60,10 +60,10 @@ magnet();
 
 //top_part();
 
-//core();
+core(offset=0.19);
 
-translate([0, 0, -20])
-  bottom_part();
+//translate([0, 0, -20])
+//  bottom_part();
 
 
 
