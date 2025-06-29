@@ -164,80 +164,78 @@ module panel_with_clips(pin_1=false, pin_2=false, pin_3=false, pin_4=false, pin_
 // end honeycomb_element.scad
 
 
-// panel_with_clips();
-
-
-//panel_9x9();
-
-module perimeter_top_item() {
-  difference() {
-    translate([0, h_outer, 0])
-        panel_with_clips(slot_1=true);  
+module wall_corner_side_turned_element() {
+    difference() {
+    panel_with_clips(
+        slot_2=true,
+        slot_3=true,
+        pin_5=true,
+        pin_6=true
+      );
     
-    translate([0, 50+h_outer, 0])
-        cube([100, 100, 100], center = true);
-  }
-  
-  translate([-r_outer*1.5, 0, 0])
-     panel_with_clips(slot_1=true, slot_2=true, slot_6=true); 
-  
+    translate([-(r_outer+r_outer - (r_outer - h_outer)*5),0,0])
+      cube([r_outer*2, r_outer*2, r_outer*2], center=true);
+    }
     
-  translate([0, h_outer-r_outer, 0])
+}
+
+module wall_corner_side_element() {
+    difference() {
+    panel_with_clips(
+        slot_2=true,
+        slot_3=true,
+        pin_5=true,
+        pin_6=true
+      );
+    
+    translate([r_outer+r_outer - (r_outer - h_outer)*5,0,0])
+      cube([r_outer*2, r_outer*2, r_outer*2], center=true);
+    }
+    
+    translate([h_outer/2+1, h_outer-r_outer, 0])
       rotate([90, 0, 90])
         linear_extrude(height = r_outer * 2, center=true)
         basic_polygon();
     
-}
-
-
-module perimeter_left_item(pin_5=true, pin_6=true) {
-  difference() {
-      translate([r_outer * 1.5, 0, 0])
-        panel_with_clips(pin_6=pin_6, pin_5=pin_5);
-      translate([50+r_outer * 1.5-r_outer/2 + (r_outer-h_outer), 0, 0])
-        cube([100, 100, 100], center = true);
-  }
-  translate([0 + r_outer-h_outer, 0, 0])
-    rotate([90, 0, 0])
-      linear_extrude(height = h_outer * 2, center=true)
+    
+    translate([h_outer/2+1, -(h_outer-r_outer), 0])
+      rotate([90, 0, -90])
+        linear_extrude(height = r_outer * 2, center=true)
         basic_polygon();
-}
-
-module perimeter_bottom() {
-    perimeter_top_item();
-    
-    translate([-3*r_outer, 0, 0])
-    perimeter_top_item();    
-    
-}
-
-module perimeter_left() {  
-     perimeter_left_item();
-    
-    translate([0, -h_outer*2, 0])
-      perimeter_left_item();   
-    
-}
-
-module perimeter_corner() {
-    
-    perimeter_bottom();
-    
-    perimeter_left();
-
 
 }
 
+module wall_corner_side() {
+    for (i = [0:7]) {    
+      translate([0, -i*h_outer*2, 0])
+        wall_corner_side_element();
+    }
+}
 
+module wall_corner_side_turned() {
+    for (i = [0:7]) {    
+      translate([0, -i*h_outer*2, 0])
+        wall_corner_side_turned_element();
+    }
+}
 
-module wall_corner_perimeter() {
+module wall_corner() {
+    corner_radius = 3.5;
     
+    intersection() {
+      translate([-5.6, -7.5*r_outer*2/2+h_outer, -5.6])
+        minkowski() {
+            cube([r_outer*2-corner_radius*2, 8*r_outer*2-corner_radius*2, r_outer*2-corner_radius*2], center=true);
+            sphere(r=corner_radius);
+        }
+      union() {
+          wall_corner_side();
+          rotate([0, 90, 0])
+              wall_corner_side_turned();
+      }
+        
+    }
 }
 
 
-//wall_corner();
-perimeter_corner();
-//perimeter_corner();
-//
-//wall_corner_side_element();
-
+wall_corner();
