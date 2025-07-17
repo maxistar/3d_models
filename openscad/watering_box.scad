@@ -1,11 +1,11 @@
-box_side = 200;
+box_side = 180;
 box_height = 40; 
 pot_radius = 70;
 hole_radius = 40;
 pot_depression = 5;
 $fn = 150;
 
-thickness = 3;
+thickness = 2;
 tube_hole_radius = 3;
 
 
