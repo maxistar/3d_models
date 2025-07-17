@@ -36,6 +36,10 @@ module perimeter_top_double() {
   include <perimeter_top_double.scad>
 }
 
+module perimeter_top_double_short() {
+  include <perimeter_top_double_short.scad> 
+}
+
 module perimeter_top_single() {
   include <perimeter_top_single.scad>
 }
@@ -76,32 +80,47 @@ rotate ([180,-90,180]) {
     }
   }
   
-  translate([-3 * x_offset-20, 0, 0]) {
+  translate([-3 * x_offset-20, -20, 0]) {
     rotate([0, 0, 180]) {
       right_perimeter();
     }
   }
   
-  translate([-3 * x_offset-20, y_offset, 0]) {
+  translate([-3 * x_offset-20, y_offset-80, 0]) {
     rotate([0, 0, 180]) {
       right_perimeter();
     }
   }
   
-  translate([-2*x_offset, -45, 0]) {
+  translate([-3 * x_offset-20, 2*y_offset-140, 0]) {
+    rotate([0, 0, 180]) {
+      right_perimeter();
+    }
+  }
+  
+  translate([-2*x_offset - 35, -50, 0]) {
     perimeter_top_double();
   }
 
-  translate([-1*x_offset - 18, -45, 0]) {
+  translate([-1*x_offset - 58, -50, 0]) {
     perimeter_top_single();
   }
+  
+  translate([ - 75, -50, 0]) {
+    perimeter_top_double_short();
+  }
 
-  translate([-2*x_offset, 2*y_offset-5, 0]) {
+  translate([-2*x_offset-30, 2*y_offset-5, 0]) {
     perimeter_bottom_single();
   }
 
-  translate([-1*x_offset+18, 2*y_offset-5, 0]) {
+  //use mirrored double
+  translate([-1*x_offset-10, 2*y_offset-5, 0]) {
     perimeter_bottom_double();
+  }
+  
+  translate([0*x_offset-30, 2*y_offset-5, 0]) {
+    perimeter_bottom_single();
   }
   
 }
@@ -119,29 +138,46 @@ rotate ([0,270,0]) {
 }
 
 
-translate([3*x_offset+20, 2.5*h_inner*7, 0]) {
+translate([3*x_offset+20, 2.5*h_inner*7-50, 0]) {
   left_perimeter();
 }
 
-translate([3*x_offset+20, 2.5*h_inner*14, 0]) {
+translate([3*x_offset+20, 2.5*h_inner*14-50, 0]) {
+  left_perimeter();
+}
+
+translate([3*x_offset+20, 2.5*h_inner*21-50, 0]) {
   left_perimeter();
 }
 
 
 
-
-translate([3*x_offset, -45, 0]) {
-    perimeter_top_double();
-}
-
-translate([2*x_offset - 18, -45, 0]) {
+translate([3*x_offset - 18, -50, 0]) {
     perimeter_top_single();
 }
 
-translate([3*x_offset, 2*y_offset-5, 0]) {
+translate([2*x_offset, -50, 0]) {
+    perimeter_top_double();
+}
+
+translate([x_offset - 18, -50, 0]) {
+    perimeter_top_single();
+}
+
+
+
+
+translate([x_offset+25, 2*y_offset-15, 0]) {
+    perimeter_bottom_double();
+}
+
+translate([2*x_offset+2, 2*y_offset-15, 0]) {
     perimeter_bottom_single();
 }
 
-translate([2*x_offset+18, 2*y_offset-5, 0]) {
+// mirrow this
+translate([3*x_offset+25, 2*y_offset-15, 0]) {
     perimeter_bottom_double();
 }
+
+

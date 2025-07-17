@@ -209,8 +209,6 @@ module perimeter_bottom() {
     translate([-9*r_outer, 0, 0])
       perimeter_top_item();   
    
-    translate([-12*r_outer, 0, 0])
-      perimeter_top_item();    
     
 }
 
