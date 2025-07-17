@@ -53,29 +53,57 @@ module perimeter_bottom_single() {
 for (i = [0:2]) {
   for (j = [0:1]) {
       if (i%2==0) {
-        translate([x_min_offset+i*x_offset,j*y_offset+h_outer,0])
-          panel_9x9(); 
-      } else {
         translate([x_min_offset+i*x_offset,j*y_offset,0])
-          panel_9x9();           
-          }
-  }
-}
-
-
-rotate ([180,-90,180]) {
-    
-    for (i = [0:2]) {
-  for (j = [0:1]) {
-      if (i%2==0) {
-        translate([-x_offset-i*x_offset,j*y_offset,0])
           panel_9x9(); 
       } else {
-        translate([-x_offset-i*x_offset,j*y_offset+h_outer,0])
+        translate([x_min_offset+i*x_offset,j*y_offset+h_outer,0])
           panel_9x9();           
           }
   }
 }
+
+
+rotate ([180,-90,180]) {  
+  for (i = [0:2]) {
+    for (j = [0:1]) {
+      if (i%2==0) {
+        translate([-x_offset-i*x_offset,j*y_offset+h_outer,0])
+          panel_9x9(); 
+      } else {
+        translate([-x_offset-i*x_offset,j*y_offset,0])
+          panel_9x9();           
+      }
+    }
+  }
+  
+  translate([-3 * x_offset-20, 0, 0]) {
+    rotate([0, 0, 180]) {
+      right_perimeter();
+    }
+  }
+  
+  translate([-3 * x_offset-20, y_offset, 0]) {
+    rotate([0, 0, 180]) {
+      right_perimeter();
+    }
+  }
+  
+  translate([-2*x_offset, -45, 0]) {
+    perimeter_top_double();
+  }
+
+  translate([-1*x_offset - 18, -45, 0]) {
+    perimeter_top_single();
+  }
+
+  translate([-2*x_offset, 2*y_offset-5, 0]) {
+    perimeter_bottom_single();
+  }
+
+  translate([-1*x_offset+18, 2*y_offset-5, 0]) {
+    perimeter_bottom_double();
+  }
+  
 }
 
     
@@ -90,10 +118,30 @@ rotate ([0,270,0]) {
    }
 }
 
-left_perimeter();
-right_perimeter();
-perimeter_top_double();
-perimeter_top_single();
-perimeter_bottom_double();
-perimeter_bottom_single();
- 
+
+translate([3*x_offset+20, 2.5*h_inner*7, 0]) {
+  left_perimeter();
+}
+
+translate([3*x_offset+20, 2.5*h_inner*14, 0]) {
+  left_perimeter();
+}
+
+
+
+
+translate([3*x_offset, -45, 0]) {
+    perimeter_top_double();
+}
+
+translate([2*x_offset - 18, -45, 0]) {
+    perimeter_top_single();
+}
+
+translate([3*x_offset, 2*y_offset-5, 0]) {
+    perimeter_bottom_single();
+}
+
+translate([2*x_offset+18, 2*y_offset-5, 0]) {
+    perimeter_bottom_double();
+}
