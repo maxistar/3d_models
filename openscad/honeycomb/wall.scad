@@ -44,12 +44,24 @@ module perimeter_top_single() {
   include <perimeter_top_single.scad>
 }
 
-module perimeter_bottom_double() {
+module perimeter_bottom_double() { 
   include <perimeter_bottom_double.scad>
+}
+
+module perimeter_bottom_double_v2() {
+  include <perimeter_bottom_double_v2.scad>
+}
+
+module perimeter_bottom_double_v3() {
+  include <perimeter_bottom_double_v3.scad>
 }
 
 module perimeter_bottom_single() {
   include <perimeter_bottom_single.scad>
+}
+
+module perimeter_bottom_single_v2() {
+  include <perimeter_bottom_single_v2.scad>
 }
 
 
@@ -110,16 +122,16 @@ rotate ([180,-90,180]) {
     perimeter_top_double_short();
   }
 
-  translate([-2*x_offset-30, 2*y_offset-5, 0]) {
-    perimeter_bottom_single();
+  translate([-2*x_offset-35, 2*y_offset-15, 0]) {
+    perimeter_bottom_single_v2();
   }
 
   //use mirrored double
-  translate([-1*x_offset-10, 2*y_offset-5, 0]) {
-    perimeter_bottom_double();
+  translate([-1*x_offset-15, 2*y_offset-15, 0]) {
+    perimeter_bottom_double_v3();
   }
   
-  translate([0*x_offset-30, 2*y_offset-5, 0]) {
+  translate([0*x_offset-35, 2*y_offset-15, 0]) {
     perimeter_bottom_single();
   }
   
@@ -176,8 +188,8 @@ translate([2*x_offset+2, 2*y_offset-15, 0]) {
 }
 
 // mirrow this
-translate([3*x_offset+25, 2*y_offset-15, 0]) {
-    perimeter_bottom_double();
+translate([3*x_offset-15, 2*y_offset-15, 0]) {
+    perimeter_bottom_double_v2();
 }
 
 
