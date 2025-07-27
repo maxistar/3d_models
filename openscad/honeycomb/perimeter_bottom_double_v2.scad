@@ -169,17 +169,17 @@ module panel_with_clips(pin_1=false, pin_2=false, pin_3=false, pin_4=false, pin_
 
 //panel_9x9();
 
-module perimeter_top_item(left_slot=false) {
+module perimeter_top_item(left_slot=false, middle_slot=false) {
   difference() {
     translate([0, h_outer, 0])
-        panel_with_clips(slot_1=true, slot_2=left_slot);  
+        panel_with_clips(slot_2=left_slot);  
     
     translate([0, 50+h_outer, 0])
         cube([100, 100, 100], center = true);
   }
   
   translate([r_outer*1.5, 0, 0])
-     panel_with_clips(slot_1=true, slot_2=true,  pin_5=true); 
+     panel_with_clips(slot_1=true, slot_2=middle_slot,  pin_5=true); 
   
   translate([-r_outer*0, -h_outer, 0])
      panel_with_clips(slot_1=true, slot_2=true, slot_6=true, pin_5=true);   
@@ -196,7 +196,7 @@ module perimeter_top_item(left_slot=false) {
 
 
 module perimeter_bottom() {
-    perimeter_top_item(left_slot=true);
+    perimeter_top_item(left_slot=false, middle_slot=true);
     
     translate([-3*r_outer, 0, 0])
       perimeter_top_item();
