@@ -22,20 +22,20 @@ bodyInset = 2;
 innerRingWidth = 1.8;
 innerRingHeight = 0.5;
 
-hookHeight = 1.5;
-hookMaxWidth = 0.3;
+hookHeight = 1.8;
+hookMaxWidth = 0.35;
 hookLength = 6.5;
 hookWidth = 20;
 hookOffset = 0.5;
 hookMinWidth = 1.5;
-holeSmallOffset = -0.1;
+holeSmallOffset = -0.0;
 
 bigHoleDiametor = 200;
 bigHoleOffset = 19;
 
-hooksAngle = 25;
-hookAngle = 10;
-angleOffset = 0.2;
+hooksAngle = 17;
+hookAngle = 8;
+angleOffset = 0.1;
 holeOffset = 1;
 
 $fn=250;
@@ -51,24 +51,24 @@ module innerWireChannelDivision(diametor) {
 
 
 module halfWireChannel(diametor, spoolDiametor) {
-difference() {
-rotate_extrude(convexity = 10) {
-    translate([spoolDiametor/4+(diametor)/4, 0, 0])
+  difference() {
+    rotate_extrude(convexity = 10) {
+      translate([spoolDiametor/4+(diametor)/4, 0, 0])
         innerWireChannelDivision(diametor);
-};
-translate([0,(spoolDiametor+(diametor)*2)/2,(diametor)*5])
-cube([spoolDiametor+diametor*2, spoolDiametor+diametor*2, (diametor)*11], center=true);
-}
+    };
+    translate([0,(spoolDiametor+(diametor)*2)/2,(diametor)*5])
+      cube([spoolDiametor+diametor*2, spoolDiametor+diametor*2, (diametor)*11], center=true);
+  }
 }
 
 
 module wireChannel(diametor, spoolDiametor) {
-translate([-spoolDiametor/4-(diametor)/4, 0, 0]) 
+  translate([-spoolDiametor/4-(diametor)/4, 0, 0]) 
     halfWireChannel(diametor, spoolDiametor);
 
 
-translate([spoolDiametor/4+(diametor)/4, 0, 0]) 
-rotate([0, 0, 180])
+  translate([spoolDiametor/4+(diametor)/4, 0, 0]) 
+    rotate([0, 0, 180])
         halfWireChannel(diametor, spoolDiametor);
 }
 
@@ -87,20 +87,19 @@ module spoolSolid() {
 }
 
 module spoolOutline() {
-union() {
+  union() {
     difference() {
-        spoolSolid();
+      spoolSolid();
 
-cylinder(h=spoolHeight*2, d1=innerDiametor, d2=innerDiametor, center=true);
+      cylinder(h=spoolHeight*2, d1=innerDiametor, d2=innerDiametor, center=true);
 
-};
-intersection() {
-    cylinder(h=spoolHeight, d1=outerDiametor, d2=outerDiametor, center=true);
-    translate([0, 0, -wireVerticalOffset]) 
-    wireChannel(wireDiametor+wireOffset+channelWidth, outerDiametor-(wireDiametor+wireOffset));
-};
-}
-    
+    };
+    intersection() {
+      cylinder(h=spoolHeight, d1=outerDiametor, d2=outerDiametor, center=true);
+      translate([0, 0, -wireVerticalOffset]) 
+        wireChannel(wireDiametor+wireOffset+channelWidth, outerDiametor-(wireDiametor+wireOffset));
+    };
+  }  
 }
 
 module spoolInnerComplete() {
@@ -197,34 +196,36 @@ module hookHole(angle) {
 }
 
 module bodyComplete() {
-difference() {
-union() {
-    difference() {
+  difference() {
+    union() {
+      difference() {
         bodyStageOne();
         hookHole(180);
         hookHole(-hooksAngle);
+        hookHole(180-hooksAngle*2);
         hookHole(+hooksAngle);
+        hookHole(180+hooksAngle*2);
         
-//        translate([bodyDiametor/2,9,4])
-//rotate([-90, 0, 90]) {   
-//    linear_extrude(height=hookLength*2, center=true)
-//        innerWireChannelDivision(wireDiametor+wireOffset*3);
-//}
-
+      };
+      hookSector(0);
+      hookSector(180-hooksAngle);
+      hookSector(0+hooksAngle*2);
+      hookSector(0-hooksAngle*2);
+      hookSector(180+hooksAngle);
+      
+      
+      translate([0,0,spoolHeight/2-bodyThikness/2]) {
+        extraRing();
+      }  
     };
-    hookSector(0);
-    hookSector(180-hooksAngle);
-    hookSector(180+hooksAngle);
-    translate([0,0,spoolHeight/2-bodyThikness/2]) {
-      extraRing();
-    }  
-};
-translate([0, bigHoleDiametor/2+bigHoleOffset,0])
-    cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
-translate([0, -bigHoleDiametor/2-bigHoleOffset,0])
-    cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
-};    
+    translate([0, bigHoleDiametor/2+bigHoleOffset,0])
+      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
+    translate([0, -bigHoleDiametor/2-bigHoleOffset,0])
+      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
+  };    
 }
+
+//extraRing();
 
 module extraRing() {
     difference() {
@@ -234,14 +235,13 @@ module extraRing() {
     }
 }
 
-//translate([0,0, -20]) 
-//  rotate([180,0,180])
-//    bodyComplete();
+translate([0,0, -20]) 
+  rotate([180,0,180])
+    bodyComplete();
 
 
+//spoolInnerComplete();
 
-spoolInnerComplete();
-
-//translate([0,0, 20]) {
+//translate([0,0, 20]) 
 //  bodyComplete();
-//}
+
