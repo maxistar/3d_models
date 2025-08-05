@@ -23,10 +23,10 @@ innerRingWidth = 1.8;
 innerRingHeight = 0.5;
 
 hookHeight = 1.5;
-hookMaxWidth = 0.5;
-hookLength = 5.5;
+hookMaxWidth = 0.3;
+hookLength = 6.5;
 hookWidth = 20;
-hookOffset = 0.3;
+hookOffset = 0.5;
 hookMinWidth = 1.5;
 holeSmallOffset = -0.1;
 
@@ -38,7 +38,7 @@ hookAngle = 10;
 angleOffset = 0.2;
 holeOffset = 1;
 
-$fn=200;
+$fn=250;
 
 
 module innerWireChannelDivision(diametor) {
@@ -234,13 +234,13 @@ module extraRing() {
     }
 }
 
-translate([0,0, -20]) 
-  rotate([180,0,180])
-    bodyComplete();
+//translate([0,0, -20]) 
+//  rotate([180,0,180])
+//    bodyComplete();
 
 
 
-//spoolInnerComplete();
+spoolInnerComplete();
 
 //translate([0,0, 20]) {
 //  bodyComplete();
