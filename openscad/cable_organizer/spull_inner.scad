@@ -24,10 +24,9 @@ innerRingHeight = 0.5;
 
 hookHeight = 1.8;
 hookMaxWidth = 0.35;
-hookLength = 6.5;
-hookWidth = 20;
+hookLength = 8.5;
 hookOffset = 0.5;
-hookMinWidth = 1.5;
+hookMinWidth = 1.1;
 holeSmallOffset = -0.0;
 
 bigHoleDiametor = 200;
@@ -170,11 +169,6 @@ module holeTheSector(angle) {
     polygon( points=[[0,0],[vectorLength*cos(angle1),vectorLength*sin(angle1)],[vectorLength*cos(angle2),vectorLength*sin(angle2)]]);    
 }
 
-//module holeSectors() {
-//    holeSector(180);
-//    holeSector(-hooksAngle);
-//    holeSector(+hooksAngle);    
-//}
 
 module holeRing() {
     translate([0,0,hookLength/2-hookHeight/2]) 
