@@ -1,43 +1,54 @@
-innerDiametor = 29;
-outerDiametor = 33;
-spoolHeight = 16;
-maxDiametor = 35;
-angleHeight = 2;
-borderHeight = 1;
+module cableWinder (
 
-wireDiametor = 3;
-wireOffset = 0.25;
+innerDiametor = 29,
+outerDiametor = 33,
+spoolHeight = 16,
+maxDiametor = 35,
+angleHeight = 2,
+borderHeight = 1,
+
+wireDiametor = 3,
+wireOffset = 0.25,
+
+
+extraRingWidth = 1,
+extraRingHeight = 2,
+
+wireVerticalOffset = 3,
+
+bodyDiametor = 60,
+bodySphereScale = 0.7,
+bodyThikness = 2,
+bodyOffset = 0.3,
+bodyInset = 2,
+innerRingWidth = 1.8,
+innerRingHeight = 0.5,
+
+hookHeight = 1.8,
+hookMaxWidth = 0.35,
+hookLength = 8.5,
+hookOffset = 0.5,
+hookMinWidth = 1.1,
+holeSmallOffset = -0.0,
+
+bigHoleDiametor = 200,
+bigHoleOffset = 19,
+
+hooksAngle = 17,
+hookAngle = 8,
+angleOffset = 0.1,
+holeOffset = 1,
+
+$fn=50,
+
+showTopPart = true,
+showCenter = true,
+showBottomPart = true,
+
+)
+{
+
 channelWidth = outerDiametor - innerDiametor;
-
-extraRingWidth = 1;
-extraRingHeight = 2;
-
-wireVerticalOffset = 3;
-
-bodyDiametor = 60;
-bodySphereScale = 0.7;
-bodyThikness = 2;
-bodyOffset = 0.3;
-bodyInset = 2;
-innerRingWidth = 1.8;
-innerRingHeight = 0.5;
-
-hookHeight = 1.8;
-hookMaxWidth = 0.35;
-hookLength = 8.5;
-hookOffset = 0.5;
-hookMinWidth = 1.1;
-holeSmallOffset = -0.0;
-
-bigHoleDiametor = 200;
-bigHoleOffset = 19;
-
-hooksAngle = 17;
-hookAngle = 8;
-angleOffset = 0.1;
-holeOffset = 1;
-
-$fn=250;
 
 
 module innerWireChannelDivision(diametor) {
@@ -219,8 +230,6 @@ module bodyComplete() {
   };    
 }
 
-//extraRing();
-
 module extraRing() {
     difference() {
         cylinder(h=extraRingHeight, r1=maxDiametor/2+bodyOffset+extraRingWidth, r2=maxDiametor/2+bodyOffset+extraRingWidth, center=true);
@@ -229,13 +238,30 @@ module extraRing() {
     }
 }
 
-translate([0,0, -20]) 
-  rotate([180,0,180])
+
+if (showTopPart) {
+  translate([0,0, -20]) 
+    rotate([180,0,180])
+      bodyComplete();
+}
+
+if (showCenter) {
+  spoolInnerComplete();
+}
+
+
+if (showBottomPart) {
+  translate([0,0, 20]) 
     bodyComplete();
+}
 
+}
 
-//spoolInnerComplete();
+cableWinder(
+$fn=50,
 
-//translate([0,0, 20]) 
-//  bodyComplete();
+showTopPart = true,
+showCenter = true,
+showBottomPart = true
 
+);
