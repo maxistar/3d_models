@@ -1,10 +1,10 @@
 $fn = 150;
 
 
-bottle_diameter = 42 * 2;
+bottle_diameter = 38.99 * 2;
 
 cup_inner_diameter = bottle_diameter + 7;
-cup_height = 80;
+cup_height = 50;
 cup_rounding = 10;
 
 module ring() {
@@ -117,6 +117,7 @@ module legs() {
 //bottle();
 
 holders();
-cap_outline();
-
-legs();
+difference() {
+  cap_outline();
+  legs();
+}
