@@ -1,9 +1,15 @@
 use <spull_complete.scad>;
 
 cableWinder(
-  $fn=250,
+  $fn=30,
+  
+  innerDiametor = 39.50,
+  outerDiametor = 45,
+  maxDiametor = 46,
+  
+  
   wireDiametor = 3,
-  outerDiametor = 33,
+  //outerDiametor = 33,
   
   bodyDiametor = 75,
   
@@ -15,7 +21,7 @@ cableWinder(
 
   showTopPart = false,
   showCenter = true,
-  showBottomPart = false
+  showBottomPart = true
   
   
 );
