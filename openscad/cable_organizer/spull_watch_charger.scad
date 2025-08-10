@@ -1,7 +1,7 @@
 use <spull_complete.scad>;
 
 cableWinder(
-  $fn=30,
+  $fn=250,
   wireDiametor = 3,
   outerDiametor = 33,
   
