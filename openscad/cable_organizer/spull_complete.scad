@@ -24,12 +24,12 @@ bodyInset = 2,
 innerRingWidth = 1.8,
 innerRingHeight = 0.5,
 
-hookHeight = 1.8,
+hookHeight = 2,
 hookMaxWidth = 0.35,
 hookLength = 8.5,
 hookOffset = 0.5,
-hookMinWidth = 1.1,
-holeSmallOffset = -0.0,
+hookMinWidth = 1.5,
+holeSmallOffset = -0.1,
 
 bigHoleDiametor = 200,
 bigHoleOffset = 19,
@@ -144,15 +144,17 @@ module hookRing() {
     difference() {
         union() {
             translate([0,0,-hookLength/2+hookHeight/2]) 
-                cylinder(h=hookHeight, r1=bodyDiametor/2-bodyThikness-hookMinWidth/2, r2=bodyDiametor/2-bodyThikness+hookMaxWidth, center=true);
+                cylinder(h=hookHeight, r1=bodyDiametor/2-bodyThikness-hookMinWidth/1.5, r2=bodyDiametor/2-bodyThikness+hookMaxWidth, center=true);
 
-            cylinder(h=hookLength, r1=bodyDiametor/2-bodyThikness-hookMinWidth/2, r2=bodyDiametor/2-bodyThikness+bodyOffset, center=true);
+            cylinder(h=hookLength, r1=bodyDiametor/2-bodyThikness-hookMinWidth/1.5, r2=bodyDiametor/2-bodyThikness+bodyOffset, center=true);
         };
 
-        cylinder(h=(hookLength)*2, r1=bodyDiametor/2-bodyThikness-hookMinWidth, r2=bodyDiametor/2-bodyThikness-hookMinWidth, center=true);
+        cylinder(h=(hookLength)*2, r=bodyDiametor/2-bodyThikness-hookMinWidth, center=true);
 
     }    
 }
+
+
 
 module hookSector(angle) {
     intersection() {
@@ -162,6 +164,8 @@ module hookSector(angle) {
         hookRing();    
     }    
 }
+
+
 
 module hookTheSector(angle) {
     vectorLength = bodyDiametor;
@@ -182,14 +186,32 @@ module holeTheSector(angle) {
 
 
 module holeRing() {
+    
+    cylinder(h=hookHeight, r2=bodyDiametor/2-bodyThikness/2-hookMinWidth/1.5, r1=bodyDiametor/2-bodyThikness/2+hookMaxWidth, center=true);
+
+    
     translate([0,0,hookLength/2-hookHeight/2]) 
         cylinder(h=hookHeight+hookOffset, r1=bodyDiametor/2-bodyThikness+hookMaxWidth, r2=bodyDiametor/2-bodyThikness+hookMaxWidth, center=true);
 
     translate([0,0,-hookLength/2+hookLength/2-hookHeight/2]) 
-        cylinder(h=hookLength, r1=bodyDiametor/2-bodyThikness-holeSmallOffset, r2=bodyDiametor/2-bodyThikness-holeSmallOffset, center=true);
+        cylinder(h=hookLength, r=bodyDiametor/2-bodyThikness+holeSmallOffset, center=true);
 }
 
-//holeRing();
+/*
+difference() {
+union() {
+hookRing();
+rotate([180,0,180])
+  difference() {
+  bodyStageOne();
+  holeRing();
+  }
+}
+translate([0,-50,0])
+  cube([100,100, 100], center=true);
+
+}
+*/
 
 module hookHole(angle) {   
     intersection() {   

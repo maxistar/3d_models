@@ -1,11 +1,12 @@
 use <spull_complete.scad>;
 
 cableWinder(
-  $fn=250,
-  wireDiametor = 5,
+  $fn=250, 
+  spoolHeight = 26,
+  wireDiametor = 4.2,
   outerDiametor = 33,
   
-  bodyDiametor = 75,
+  bodyDiametor = 70,
   
   bigHoleOffset = 25,
 
