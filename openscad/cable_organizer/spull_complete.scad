@@ -34,7 +34,7 @@ holeSmallOffset = -0.1,
 bigHoleDiametor = 200,
 bigHoleOffset = 19,
 
-hooksAngle = 17,
+hooksAngle = 20,
 hookAngle = 8,
 angleOffset = 0.1,
 holeOffset = 1,
@@ -141,12 +141,20 @@ module bodyStageOne() {
 }
 
 module hookRing() {
+    
+    moveHook = 2;
+    
     difference() {
         union() {
-            translate([0,0,-hookLength/2+hookHeight/2]) 
-                cylinder(h=hookHeight, r1=bodyDiametor/2-bodyThikness-hookMinWidth/1.5, r2=bodyDiametor/2-bodyThikness+hookMaxWidth, center=true);
-
-            cylinder(h=hookLength, r1=bodyDiametor/2-bodyThikness-hookMinWidth/1.5, r2=bodyDiametor/2-bodyThikness+bodyOffset, center=true);
+            translate([0,0,-hookLength/2+hookHeight/2]) { 
+                translate([0,0,0.5/2]) 
+                  cylinder(h=hookHeight-0.5, r=bodyDiametor/2-bodyThikness+hookMaxWidth*0.5, center=true);
+                translate([0,0,(-hookHeight+0.5)/2]) 
+                  cylinder(h=0.5, r1=bodyDiametor/2-bodyThikness+hookMaxWidth*0.0, r2=bodyDiametor/2-bodyThikness+hookMaxWidth*0.5, center=true);
+            }
+            
+            translate([0, 0, moveHook/2])
+            cylinder(h=hookLength+moveHook, r=bodyDiametor/2-bodyThikness-hookMinWidth/4, center=true);
         };
 
         cylinder(h=(hookLength)*2, r=bodyDiametor/2-bodyThikness-hookMinWidth, center=true);
@@ -199,19 +207,20 @@ module holeRing() {
 
 /*
 difference() {
-union() {
-hookRing();
-rotate([180,0,180])
-  difference() {
+ union() {
   bodyStageOne();
-  holeRing();
-  }
-}
-translate([0,-50,0])
+  hookRing();
+  rotate([180,0,180])
+    difference() {
+      bodyStageOne();
+      holeRing();
+    }
+ }
+ translate([0,-50,0])
   cube([100,100, 100], center=true);
-
 }
 */
+
 
 module hookHole(angle) {   
     intersection() {   
@@ -222,7 +231,7 @@ module hookHole(angle) {
     }
 }
 
-module bodyComplete() {
+module bodyComplete(bottom=false) {
   difference() {
     union() {
       difference() {
@@ -245,12 +254,56 @@ module bodyComplete() {
         extraRing();
       }  
     };
-    translate([0, bigHoleDiametor/2+bigHoleOffset,0])
-      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
-    translate([0, -bigHoleDiametor/2-bigHoleOffset,0])
-      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
+    if (!bottom) {
+      scale([1, -1, 1])
+        bigcuts();
+    } else {
+      bigcuts();
+    }
+    //translate([0, bigHoleDiametor/2+bigHoleOffset,0])
+      //cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
+      //bigcut();
+    //translate([0, -bigHoleDiametor/2-bigHoleOffset,0])
+    //  cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
   };    
 }
+
+
+module bigcut() {
+  cutradius = 10;
+  rotate([0, 0, 10]) 
+  linear_extrude(height=(spoolHeight)*2, center=true)
+  union() {
+    translate([0, -cutradius * 3])
+      circle(r=cutradius);
+
+    difference () {
+      circle(r=cutradius * 4);
+      union() {
+        translate([cutradius * 4, 0])
+          square(cutradius * 8, center=true);
+        translate([0, cutradius * 4])
+          square(cutradius * 8, center=true);
+      }
+    }
+  }
+}
+
+module bigcuts() {
+translate([-0, 59,0])
+  bigcut();
+
+translate([0, -59,0])
+  scale([-1, -1, 1])
+    bigcut();
+}
+
+//bigcuts();
+
+//translate([0, bigHoleDiametor/2+bigHoleOffset,0])
+//      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
+//    translate([0, -bigHoleDiametor/2-bigHoleOffset,0])
+//      cylinder(h=(spoolHeight)*2, d=bigHoleDiametor, center=true);
 
 module extraRing() {
     difference() {
@@ -274,16 +327,14 @@ if (showCenter) {
 
 if (showBottomPart) {
   translate([0,0, 20]) 
-    bodyComplete();
+    bodyComplete(bottom=true);
 }
 
 }
 
 cableWinder(
-$fn=50,
-
-showTopPart = true,
-showCenter = true,
-showBottomPart = true
-
+  $fn=250,
+  showTopPart = true,
+  showCenter = false,
+  showBottomPart = false
 );
