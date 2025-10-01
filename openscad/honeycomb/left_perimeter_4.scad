@@ -24,7 +24,7 @@ module perimeter_left_item(pin_5=true, pin_6=true) {
 
 module perimeter_left() {  
     
-    for (i = [0:6]) {       
+    for (i = [0:3]) {       
       translate([0, -h_outer*2*i, 0])
         perimeter_left_item();   
     }

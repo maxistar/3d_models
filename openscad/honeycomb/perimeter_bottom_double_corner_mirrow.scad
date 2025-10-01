@@ -29,10 +29,10 @@ module perimeter_top_item(left_slot=false,top_slot=false) {
     
 }
 
-module perimeter_left_item(pin_5=true, pin_6=true) {
+module perimeter_right_item(slot_5=true, slot_6=true) {
   difference() {
       translate([r_outer * 1.5, 0, 0])
-        panel_with_clips(pin_6=pin_6, pin_5=pin_5);
+        panel_with_clips(slot_6=slot_6, slot_5=slot_5);
       translate([50+r_outer * 1.5-r_outer/2 + (r_outer-h_outer), 0, 0])
         cube([100, 100, 100], center = true);
   }
@@ -56,25 +56,31 @@ module perimeter_bottom() {
       perimeter_top_item();    
     
     translate([1.5*r_outer, 0, 0])
-      panel_with_clips(slot_1=true, slot_2=true,  pin_5=true); 
+      panel_with_clips(slot_1=true,  pin_5=true); 
     
     
-    translate([1.5*r_outer, -h_outer, 0])
-      perimeter_left_item(pin_6=false);
+    translate([-10.5*r_outer, -h_outer, 0])
+        rotate([0, 0, 180])
+          perimeter_right_item();
+    
     
     
     difference() {
-      translate([1.5*r_outer, h_outer, 0])
-        perimeter_left_item();
+      translate([-10.5*r_outer, h_outer, 0])
+        rotate([0, 0, 180])
+          perimeter_right_item();
+        
     
-      translate([2*r_outer, 1.5*r_outer+1, 0])
+      translate([-11*r_outer, 1.5*r_outer+1, 0])
         cube([1.5*r_outer, 1.5*r_outer, 1.5*r_outer], center=true);
     }
     
-    translate([1.5*r_outer+1.8, h_outer-r_outer, 0])
+    
+    translate([-11.0*r_outer+5, h_outer-r_outer, 0])
       rotate([90, 0, 90])
         linear_extrude(height = r_outer * 2, center=true)
           basic_polygon();
+    
 }
 
 perimeter_bottom();

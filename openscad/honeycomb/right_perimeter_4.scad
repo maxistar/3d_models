@@ -1,16 +1,15 @@
 $fn = 50;
 
+
 h_outer = 10+1.8;
 r_outer = h_outer * 2/sqrt(3);
 
+use <honeycomb_element.scad>; 
 
-
-use <honeycomb_element.scad>;
-
-module perimeter_left_item(pin_5=true, pin_6=true) {
+module perimeter_right_item(slot_5=true, slot_6=true) {
   difference() {
       translate([r_outer * 1.5, 0, 0])
-        panel_with_clips(pin_6=pin_6, pin_5=pin_5);
+        panel_with_clips(slot_6=slot_6, slot_5=slot_5);
       translate([50+r_outer * 1.5-r_outer/2 + (r_outer-h_outer), 0, 0])
         cube([100, 100, 100], center = true);
   }
@@ -22,16 +21,16 @@ module perimeter_left_item(pin_5=true, pin_6=true) {
 
 
 
-module perimeter_left() {  
+module perimeter_right() {  
     
-    for (i = [0:6]) {       
+    for (i = [0:3]) {    
       translate([0, -h_outer*2*i, 0])
-        perimeter_left_item();   
+        perimeter_right_item();   
     }
 }
 
 
 
-perimeter_left();
+perimeter_right();
 
 

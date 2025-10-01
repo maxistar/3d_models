@@ -69,7 +69,7 @@ module perimeter_bottom() {
     }   
    
     translate([-r_outer*13.5, 0, 0])
-      panel_with_clips(slot_1=true,   pin_5=true); 
+      panel_with_clips(slot_1=true,   pin_5=false); 
    
   
 }
