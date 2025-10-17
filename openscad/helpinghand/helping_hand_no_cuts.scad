@@ -23,7 +23,7 @@ smallConnectorCylinderRadius = 2.0;
     
     cutStarRadius = 0.5;
     cutWidth = 0.4;
-    tentionOffset = -0.0;
+    tentionOffset = 0.01;
 cutsOffset = 1.2;
 
 
@@ -295,7 +295,7 @@ module top_panel() {
        
        translate([2,0,0]) {
          rotate([0,90,0])
-    cylinder(r=connectorCylinderRadius+0.75, h=helper_height, center=true);
+           cylinder(r1=connectorCylinderRadius+1.2, r2=connectorCylinderRadius+0.75, h=helper_height, center=true);
        }
            
      }
@@ -414,7 +414,7 @@ difference() {
 */
 
 
-connector_element();
+//connector_element();
 //top_holoding_panel();
 
 
@@ -452,7 +452,8 @@ module bottom_panel_right() {
 }
 
 
-//bottom_panel_left();
+//top_panel_left();
+top_panel_right();
 
 
 /*

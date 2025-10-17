@@ -57,8 +57,22 @@ slotes();
 }
 
 
+module ruler() {
+    difference() {
+    cube([liner_width, 146,ruler_thickness], center=true);
+    
+    for(i=[0:16]) {
+      translate([0, i*dot_distance - 146/2 +4,0]) {
+        cube([5,3,5], center=true);    
+      }
+    }
+    }
+}
+
 //liner();
 
-scale([-1,1,1]) {
-  cover();
-}
+//scale([-1,1,1]) {
+//  cover();
+//}
+
+ruler();
