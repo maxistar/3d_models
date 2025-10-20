@@ -2,25 +2,31 @@ import React from 'react';
 import { StlViewer } from 'react-stl-viewer';
 
 const style = {
-    width: '100%',
-    height: '400px',
+    width: '100vw',
+    height: '100vh',
     backgroundColor: '#f0f0f0',
 };
 
 export default function STLViewerComponent({ url }) {
     return (
-        <div style={style}>
+        <div>
             <StlViewer
                 url={url}
+                style={style}
                 orbitControls                // ← включает вращение/зум
-                shadows                      // тени на “пол”
-                showAxes                     // оси X/Y/Z
-                cameraProps={{               // подстрой стартовой камеры
-                    position: [2, 2, 2],       // подвинь при необходимости
-                    fov: 50
+                shadows = {true}                     // тени на “пол”
+                showAxes = {false}  
+                modelProps={{
+                    color: "#8FFE34",
+                    scale: 4
                 }}
-                modelColor="#B92E34"
-                backgroundColor="#EAEAEA"
+                cameraProps={{
+                    initialPosition: {
+                        latitude: 0.2,
+                        longitude: 1.3,
+                        distance: 3.0,    
+                    }
+                }}
                 rotate={true}
             />
         </div>
