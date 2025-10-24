@@ -3,7 +3,7 @@ import { StlViewer } from 'react-stl-viewer';
 
 const style = {
     width: '100vw',
-    height: '100vh',
+    height: '500px',
     backgroundColor: '#f0f0f0',
 };
 

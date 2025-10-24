@@ -86,3 +86,21 @@ module ruler() {
       }
     }
 }
+
+translate([0, 0, 40]) 
+  ruler();
+
+translate([0, 0, 30]) 
+  liner_with_cuts();
+    
+translate([0, 0, 20]) 
+  liner();
+
+translate([0, 0, 10]) 
+  cover();
+
+rotate([0,0,180]) {
+  scale([-1,1,1]) {
+    cover();
+  }
+}

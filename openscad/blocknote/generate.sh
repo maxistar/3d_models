@@ -11,10 +11,10 @@ for scad in *.scad; do
   [ -e "$scad" ] || { echo "No .scad files found."; exit 0; }
 
   # skip specific file
-  if [[ "$scad" == "blocknote.scad" ]]; then
-    echo "Skipping $scad"
-    continue
-  fi
+  # if [[ "$scad" == "blocknote.scad" ]]; then
+  #   echo "Skipping $scad"
+  #   continue
+  # fi
 
   base="${scad%.scad}"
   echo "Processing $scad..."

@@ -51,7 +51,7 @@ export default function STLViewerGallery({ urls }) {
                         initialPosition: {
                             latitude: 0.9,
                             longitude: 0.2,
-                            distance: 3
+                            distance: 2
                         },
                     }}
                     modelProps={{ color: '#f4ab22' }} // можешь включить кастомный цвет модели
