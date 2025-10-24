@@ -1,4 +1,4 @@
-$fn = 50;
+$fn = 150;
 
 
 thickness = 2;
@@ -230,19 +230,25 @@ module base_holder() {
 
 //terminal_connector();
 
-//base_holder();
+rotate([0,180,0])
+base_holder();
 
 
-//lense_holder();
+//rotate([180,0,0])
+//  lense_holder();
 
-connector_element();
+//connector_element();
 
-/*
+
 difference() {
-  connector_element();
+  union() {
+    connector_element();
+    translate([connectorLength,0,0])
+      connector_element();
+  }
     translate([0,-25,0]) {
-      cube([50,50,50], center=true);
+      cube([150,50,150], center=true);
     }
 }
-*/
+
 

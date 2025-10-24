@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import STLViewerGallery from '../components/STLViewerGallery';
+
+const stlFiles = [
+	'/openscad/helpinghand/helping_hand.stl',
+	'/openscad/helpinghand/helping_hand_base_element.stl',
+	'/openscad/helpinghand/helping_hand_connector_element.stl',
+	'/openscad/helpinghand/helping_hand_linse_holder.stl',
+	'/openscad/helpinghand/helping_hand_terminal_element.stl',
+];
+
+---
+
+<Layout>
+	<div>
+	  <STLViewerGallery client:only="react" urls={stlFiles} />
+	</div>
+</Layout>

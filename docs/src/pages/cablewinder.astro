@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import STLViewerGallery from '../components/STLViewerGallery';
+
+const stlFiles = [
+	'/openscad/cable_organizer/spull_outer.stl',
+];
+
+---
+
+<Layout>
+	<div>
+	  <STLViewerGallery client:only="react" urls={stlFiles} />
+	</div>
+</Layout>
