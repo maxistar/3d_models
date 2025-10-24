@@ -15,16 +15,16 @@ export default function STLViewerComponent({ url }) {
                 style={style}
                 orbitControls                // ← включает вращение/зум
                 shadows = {true}                     // тени на “пол”
-                showAxes = {false}  
+                showAxes = {true}  
                 modelProps={{
                     color: "#8FFE34",
                     scale: 4
                 }}
                 cameraProps={{
                     initialPosition: {
-                        latitude: 0.2,
+                        latitude: 0.5,
                         longitude: 1.3,
-                        distance: 3.0,    
+                        distance: 5.0,    
                     }
                 }}
                 rotate={true}

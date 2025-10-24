@@ -20,7 +20,7 @@ for scad in *.scad; do
   echo "Processing $scad..."
 
   # Generate STL
-  openscad -o "${base}.stl" "$scad"
+  openscad --export-format binstl -o "${base}.stl" "$scad"
 
   # Generate PNG preview (optional: you can add --imgsize or --camera options)
   openscad -o "${base}.png" "$scad"
