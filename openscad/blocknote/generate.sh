@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-
-set -e  # stop on error
-
 rm *.stl
 rm *.png
+
+#set -e  # stop on error
 
 
 for scad in *.scad; do
   # skip if no .scad files found
   [ -e "$scad" ] || { echo "No .scad files found."; exit 0; }
+
+  # skip specific file
+  if [[ "$scad" == "blocknote.scad" ]]; then
+    echo "Skipping $scad"
+    continue
+  fi
 
   base="${scad%.scad}"
   echo "Processing $scad..."
@@ -25,6 +30,3 @@ done
 
 echo "✅ All .scad files processed."
 
-
-openscad -o cover.stl cover.scad
-openscad -o cover.png cover.scad
