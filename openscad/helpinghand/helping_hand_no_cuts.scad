@@ -23,7 +23,7 @@ smallConnectorCylinderRadius = 2.0;
     
     cutStarRadius = 0.5;
     cutWidth = 0.4;
-    tentionOffset = 0.01;
+    tentionOffset = 0.001;
 cutsOffset = 1.2;
 
 
@@ -414,7 +414,7 @@ difference() {
 */
 
 
-//connector_element();
+connector_element();
 //top_holoding_panel();
 
 
@@ -453,7 +453,7 @@ module bottom_panel_right() {
 
 
 //top_panel_left();
-top_panel_right();
+//top_panel_right();
 
 
 /*

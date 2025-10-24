@@ -3,9 +3,9 @@ $fn = 50;
 bloknote_width = 105;
 bloknote_length = 145;
 cover_thickness=0.35;
-ruler_thickness=0.3;
+ruler_thickness=0.4;
 
-liner_width=15;
+liner_width=20;
 dot_distance = 9-9/19;
 hole_radius=2.5;
 
@@ -46,7 +46,7 @@ holes();
 module liner() {
 difference() {
 minkowski() {
-  cube([liner_width, bloknote_length+3,ruler_thickness], center=true);
+  cube([liner_width, bloknote_length+5,ruler_thickness], center=true);
   cylinder(r=3,h=cover_thickness, center=true);
 }
 translate([liner_width/2+1, -bloknote_length/2+4.5, 0])
@@ -57,22 +57,50 @@ slotes();
 }
 
 
+module liner_with_cuts() {
+    difference() {
+      liner(); 
+       
+      for(i=[0:16]) {
+        translate([5, i*dot_distance - 146/2 +4,0]) {
+          cube([5,3,5], center=true);    
+        }
+      } 
+      
+      for(i=[0:5]) {
+        translate([-5, i*i*1.5 - 146/2,0]) {
+          cube([2*i,2*i,5], center=true);    
+        }
+      } 
+      
+      for(i=[0:5]) {
+        translate([-5, i*i*1.5 - 146/2 + 100,0]) {
+          cylinder(r=i, h=4, center=true);    
+        }
+      } 
+    }
+    
+
+
+}
+
 module ruler() {
     difference() {
     cube([liner_width, 146,ruler_thickness], center=true);
     
-    for(i=[0:16]) {
-      translate([0, i*dot_distance - 146/2 +4,0]) {
-        cube([5,3,5], center=true);    
+      for(i=[0:16]) {
+        translate([0, i*dot_distance - 146/2 +4,0]) {
+          cube([5,3,5], center=true);    
+        }
       }
-    }
     }
 }
 
 //liner();
+liner_with_cuts();
 
 //scale([-1,1,1]) {
 //  cover();
 //}
 
-ruler();
+//ruler();
