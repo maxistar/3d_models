@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import STLViewerGallery from '../components/STLViewerGallery';
+
+const stlFiles = [
+	'/openscad/blocknote/cover.stl',
+	'/openscad/blocknote/cover_back.stl',
+	'/openscad/blocknote/liner.stl',
+	'/openscad/blocknote/hole_making_template.stl',
+	'/openscad/blocknote/ruler.stl',
+	'/openscad/blocknote/ruler_with_cuts.stl'
+];
+
+---
+
+<Layout>
+	<div>
+	  <STLViewerGallery client:only="react" urls={stlFiles} />
+	</div>
+</Layout>
