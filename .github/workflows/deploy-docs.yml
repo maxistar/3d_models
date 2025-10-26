@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Link STL models for build
-        run: mkdir public/3d_models/ && cp -r ../openscad public/3d_models/openscad
+        run: mkdir public/3d_models/ && cp -r ../openscad public/3d_models/openscad && && ls public/3d_models/openscad
 
       - name: Build project
         run: npm run build
