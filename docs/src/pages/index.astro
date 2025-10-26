@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import STLViewerComponent from '../components/STLViewerComponent.jsx';
-const modelUrl = '/openscad/blocknote/cover.stl';
+const modelUrl = '/3d_models/openscad/blocknote/cover.stl';
 
 ---
 
@@ -9,11 +9,11 @@ const modelUrl = '/openscad/blocknote/cover.stl';
 	<div>
 	  <STLViewerComponent client:only="react" url={modelUrl} />
 		<ul>
-			<li><a href="/blocknote">Blocknote</a></li>
-			<li><a href="/helpinghand">Third Hand</a></li>
-			<li><a href="/helpinghand_solid">Third Hand Solid</a></li>
-			<li><a href="/cablewinder">Cable Organizer</a></li>
-			<li><a href="/honeycomb">Honeycomb</a></li>
+			<li><a href="/3d_models/blocknote">Blocknote</a></li>
+			<li><a href="/3d_models/helpinghand">Third Hand</a></li>
+			<li><a href="/3d_models/helpinghand_solid">Third Hand Solid</a></li>
+			<li><a href="/3d_models/cablewinder">Cable Organizer</a></li>
+			<li><a href="/3d_models/honeycomb">Honeycomb</a></li>
 		</ul>
 	</div>
 </Layout>
