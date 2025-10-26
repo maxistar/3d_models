@@ -23,7 +23,7 @@ smallConnectorCylinderRadius = 2.0;
     
     cutStarRadius = 0.5;
     cutWidth = 0.4;
-    tentionOffset = 0.001;
+    tentionOffset = 0.002;
 cutsOffset = 1.2;
 
 
@@ -397,7 +397,7 @@ module two_panels() {
 
 
 
-/*
+
 difference() {
   union() {
     connector_element();
@@ -411,10 +411,10 @@ difference() {
   translate([0,0,connectorLength*2])
     cube([connectorLength*6,connectorLength*6,connectorLength*4], center=true);
 }
-*/
 
 
-connector_element();
+
+//connector_element();
 //top_holoding_panel();
 
 
