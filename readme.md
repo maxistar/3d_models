@@ -3,7 +3,7 @@
 ## Overview
 This repository gathers a set of parametric OpenSCAD designs for everyday 3D prints. The models range from cable organizers and modular wall storage to planters, hobby parts, and small household accessories. Each `.scad` file can be opened in OpenSCAD to customize dimensions before exporting printable meshes (`.stl`/`.3mf`).
 
-You can see models visualisations here.
+You can see models visualisations [here](https://projects.maxistar.me/3d_models/).
 
 ## Repository layout
 - `openscad/` – source models grouped by theme. Most folders also contain pre-exported meshes ready for slicing.
