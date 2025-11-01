@@ -1,10 +1,10 @@
-length_inner = 12;
+length_inner = 9;
 length_outer = 5;
-length_center = 22;
+length_center = 18;
 length_total = length_center+length_outer+length_inner;
 inner_diametr = 15.4;
 
-deep_offset = 3;
+deep_offset = -3;
 
 difference() {
 translate([0,0,length_total/2]) {
