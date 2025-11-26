@@ -18,7 +18,7 @@ generateBoxBottom = true;
 // Should the top of the main box be generated
 generateBoxTop = true;
 // Should the latches be generated
-generateLatches = true;
+generateLatches = false;
 // Should the gasket be generated.  NOTE: The gasket will still only be generated if the boxSealType is = 1 (Gasket)
 generateGasket = true;
 // Use this option to generate a test gasket and casket insert.  This is so you can do a small print to test your tolerances before printing a full box.  You will need to separate/split the in the slicer and print them one at a time.  This "sample case rim(where the gasket will be inserted)" in your filament of choice, and the gasket itself in TPU.
@@ -56,9 +56,9 @@ internalBoxWidthXMm = 150; // .1
 // The length(Y) of the inside box wall in MM
 internalboxLengthYMm = 70; // .1
 // The internal height on the box top
-internalBoxTopHeightZMm = 20; // .1
+internalBoxTopHeightZMm = 25; // .1
 // The internal height on the box bottom
-internalboxBottomHeightZMm = 20; // .1
+internalboxBottomHeightZMm = 25; // .1
 
 // The width on the box wall and floor.  (NOTE: If you want square inside corners, the boxWallWidthMm must be > the  boxChamferRadiusMm.)
 boxWallWidthMm = 3.0; // [1:0.1:10]
@@ -104,7 +104,7 @@ openingTolerance = 0.1; // .05
 // **************************************
 
 // The number of horixontal sections (the number of dividers = countainerWidthXSections - 1)
-countainerWidthXSections = 1; //[1:20]
+countainerWidthXSections = 2; //[1:20]
 // This is the number of horixontal dividers to skip, this will effectively make a larger section followed by smaller ones
 numCountainerWidthXSectionsToSkip = 0; // 1
 // The number of virtical sections (the number of dividers = boxLengthYSections - 1)
