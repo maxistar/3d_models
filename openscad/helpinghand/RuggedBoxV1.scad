@@ -104,13 +104,17 @@ openingTolerance = 0.1; // .05
 // **************************************
 
 // The number of horizontal sections in the top (the number of dividers = countainerTopWidthXSections - 1)
-countainerTopWidthXSections = 2; //[1:20]
+countainerTopWidthXSections = 1; //[1:20]
 // The number of horizontal sections in the bottom (the number of dividers = countainerBottomWidthXSections - 1)
 countainerBottomWidthXSections = 2; //[1:20]
 // Height of the top horizontal dividers
 containerTopXSectionsHeight = 20; // .1
 // Height of the bottom horizontal dividers
 containerBottomXSectionsHeight = 20; // .1
+// Add a perimeter step inside the top
+containerTopUsePerimeterStep = true;
+// Add a perimeter step inside the bottom
+containerBottomUsePerimeterStep = true;
 // This is the number of horixontal dividers to skip, this will effectively make a larger section followed by smaller ones
 numCountainerWidthXSectionsToSkip = 0; // 1
 // The number of virtical sections (the number of dividers = boxLengthYSections - 1)
@@ -350,6 +354,9 @@ module BoxTop(isStdHinge) {
         union() {
             BoxLengthXSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, false, countainerTopWidthXSections, containerTopXSectionsHeight);
             BoxWidthYSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, true);
+            if(containerTopUsePerimeterStep) {
+                BoxPerimeterStep(boxSectionSeparatorWidth, boxTopHeightZMm, containerTopXSectionsHeight);
+            }
         }
 }
 
@@ -387,6 +394,9 @@ module BoxBottom(isStdHinge) {
     union() {
         BoxLengthXSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false, countainerBottomWidthXSections, containerBottomXSectionsHeight);
         BoxWidthYSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false);
+        if(containerBottomUsePerimeterStep) {
+            BoxPerimeterStep(boxSectionSeparatorWidth, boxBottomHeightZMm, containerBottomXSectionsHeight);
+        }
     }
 }
 
@@ -842,6 +852,19 @@ module BoxWidthYSeparators(separatorWidth, height, isSkipFromEnd) {
         }
     }
     
+}
+
+module BoxPerimeterStep(separatorWidth, height, sectionsHeight) {
+    actualHeight = min(height, sectionsHeight);
+    stepHeight = actualHeight - boxWallWidthMm;
+    if(stepHeight > 0) {
+        translate([boxWallWidthMm-(separatorWidth/2), boxWallWidthMm-(separatorWidth/2), -(height-boxWallWidthMm)])
+            difference() {
+                cube([(boxWidthXMm-(2*boxWallWidthMm))+separatorWidth, (boxLengthYMm-(2*boxWallWidthMm))+separatorWidth, stepHeight]);
+                translate([separatorWidth, separatorWidth, 0])
+                    cube([(boxWidthXMm-(2*boxWallWidthMm))-separatorWidth, (boxLengthYMm-(2*boxWallWidthMm))-separatorWidth, stepHeight+1]);
+            }
+    }
 }
 
 
