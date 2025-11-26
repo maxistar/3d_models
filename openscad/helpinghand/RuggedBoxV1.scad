@@ -281,7 +281,8 @@ translate([0,0,closedBoxZOffset])
                 BoxTop(true);
             }
             else {
-            translate([0,hingeRadiusMm*2,boxTopHeightZMm])
+            // Lay the top beside the bottom with hinge holes aligned
+            translate([0,0,boxTopHeightZMm])
                 translate([0,(boxLengthYMm+rimWidthMm+hingeRadiusMm+openingTolerance)*2, openingTolerance]) rotate([-180,0,0])
                     BoxTop(true);
             }
