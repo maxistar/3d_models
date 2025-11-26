@@ -713,6 +713,8 @@ module BotomStandardHinge() {
     hingeInsideWidthMm = hingeTotalWidthMm - (2*hingeOutsideWidth) - (2*hingeToleranceMm);
 
     hingeSpacing = (boxWidthXMm - (numberOfHinges*hingeTotalWidthMm)) / (numberOfHinges + 1);
+    hingePinRadius = hingeScrewLargeRadiusMm - hingeToleranceMm;  // leave clearance inside the top hinge hole
+    hingePinLength = hingeInsideWidthMm+(hingeOutsideWidth*2)+(hingeToleranceMm*2)+.2;
 
     translate([0,rimWidthMm,0]) // add back in the rim width
         for (h =[1:numberOfHinges]) { 
@@ -725,46 +727,45 @@ module BotomStandardHinge() {
                         : hingeCenterOffsetMm;
             hingeX = (h*hingeSpacing)+((h-1)*hingeTotalWidthMm)+hingeOutsideWidth+hingeToleranceMm+actualHingeCenterOffsetMm;
             
-            difference () {
-                union() {
-                    // Main hinge cylinder
-                    translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                        cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
-                    translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                        cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
-                    
-                    
-                    // ribs
-                    translate([hingeX-hingeToleranceMm,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
-                    translate([hingeX+hingeInsideWidthMm+hingeToleranceMm+hingeOutsideWidth,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
-                    
-                    // Attach the hinge to the top
-                    adjustment = sqrt((hingeRadiusMm^2)/2);
-                    hingeConnectorHeight = sqrt(hingeRadiusMm^2+hingeRadiusMm^2) + (hingeRadiusMm-adjustment);    
-                    
-                    difference() {
-                        union() {
-                            translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
-                                translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
-                                    rotate([45,0,0])
-                                        // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
-                                        translate([0,-hingeRadiusMm*6,0])
-                                            cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
-                            translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
-                                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
-                                    rotate([45,0,0])
-                                        // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
-                                        translate([0,-hingeRadiusMm*6,0])
-                                            cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
-                        } 
-                        // TODO: fix this cutout as it doesn't work when the case is very curved!!!                  
-                        //ranslate([0,boxLengthYMm-boxWallWidthMm-boxLengthYMm,-boxBottomHeightZMm])
-                        //   cube([boxWidthXMm,boxLengthYMm,boxBottomHeightZMm]);
-                    }
-                };
-                // Cut the screw hole out
+            union() {
+                // Main hinge cylinder
+                translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
+                    cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
+                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
+                    cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
+                
+                // Solid pin to print-in-place through the paired top hinge
                 translate([hingeX-((hingeOutsideWidth+hingeToleranceMm)+.1),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                    cylinder(hingeInsideWidthMm+(hingeOutsideWidth*2)+(hingeToleranceMm*2)+.2,hingeScrewSmallRadiusMm,hingeScrewSmallRadiusMm, $fn=100);
+                    cylinder(hingePinLength,hingePinRadius,hingePinRadius, $fn=100);
+                
+                
+                // ribs
+                translate([hingeX-hingeToleranceMm,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
+                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm+hingeOutsideWidth,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
+                
+                // Attach the hinge to the top
+                adjustment = sqrt((hingeRadiusMm^2)/2);
+                hingeConnectorHeight = sqrt(hingeRadiusMm^2+hingeRadiusMm^2) + (hingeRadiusMm-adjustment);    
+                
+                difference() {
+                    union() {
+                        translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
+                            translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
+                                rotate([45,0,0])
+                                    // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
+                                    translate([0,-hingeRadiusMm*6,0])
+                                        cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
+                        translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
+                            translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
+                                rotate([45,0,0])
+                                    // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
+                                    translate([0,-hingeRadiusMm*6,0])
+                                        cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
+                    } 
+                    // TODO: fix this cutout as it doesn't work when the case is very curved!!!                  
+                    //ranslate([0,boxLengthYMm-boxWallWidthMm-boxLengthYMm,-boxBottomHeightZMm])
+                    //   cube([boxWidthXMm,boxLengthYMm,boxBottomHeightZMm]);
+                }
         }
     }
 }
