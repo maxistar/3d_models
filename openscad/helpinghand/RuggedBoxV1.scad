@@ -103,8 +103,10 @@ openingTolerance = 0.1; // .05
 // **** Settings for adding dividers **** 
 // **************************************
 
-// The number of horixontal sections (the number of dividers = countainerWidthXSections - 1)
-countainerWidthXSections = 2; //[1:20]
+// The number of horizontal sections in the top (the number of dividers = countainerTopWidthXSections - 1)
+countainerTopWidthXSections = 2; //[1:20]
+// The number of horizontal sections in the bottom (the number of dividers = countainerBottomWidthXSections - 1)
+countainerBottomWidthXSections = 1; //[1:20]
 // This is the number of horixontal dividers to skip, this will effectively make a larger section followed by smaller ones
 numCountainerWidthXSectionsToSkip = 0; // 1
 // The number of virtical sections (the number of dividers = boxLengthYSections - 1)
@@ -342,7 +344,7 @@ module BoxTop(isStdHinge) {
     }
     rotate([180,0,0]) translate([0,-boxLengthYMm,-openingTolerance]) 
         union() {
-            BoxLengthXSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, false);
+            BoxLengthXSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, false, countainerTopWidthXSections);
             BoxWidthYSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, true);
         }
 }
@@ -379,7 +381,7 @@ module BoxBottom(isStdHinge) {
     }
     
     union() {
-        BoxLengthXSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false);
+        BoxLengthXSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false, countainerBottomWidthXSections);
         BoxWidthYSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false);
     }
 }
@@ -808,14 +810,14 @@ module TopStandardHinge() {
 
 
 
-module BoxLengthXSeparators(separatorWidth, height, isSkipFromEnd) {
+module BoxLengthXSeparators(separatorWidth, height, isSkipFromEnd, widthXSections) {
     
     skipFromBegining = isSkipFromEnd ? 0 : numCountainerWidthXSectionsToSkip;
     skipFromEnd = isSkipFromEnd ? numCountainerWidthXSectionsToSkip : 0;
     
-    if(countainerWidthXSections > 1) {
-        for (y =[1+skipFromBegining:(countainerWidthXSections-1-skipFromEnd)]) {
-            translate([(((boxWidthXMm-(2*boxWallWidthMm))/countainerWidthXSections)*y)+(boxWallWidthMm-(separatorWidth/2)),boxWallWidthMm,-(height-boxWallWidthMm)]) 
+    if(widthXSections > 1) {
+        for (y =[1+skipFromBegining:(widthXSections-1-skipFromEnd)]) {
+            translate([(((boxWidthXMm-(2*boxWallWidthMm))/widthXSections)*y)+(boxWallWidthMm-(separatorWidth/2)),boxWallWidthMm,-(height-boxWallWidthMm)]) 
                 BoxInsert(boxLengthYMm, height, separatorWidth);
         }
     }
