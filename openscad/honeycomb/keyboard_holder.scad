@@ -6,14 +6,14 @@ difference() {
 
 
 linear_extrude(height = 15, center=true) 
-polygon([[0,0],[30,0],[30,30]]);
+polygon([[0,0],[30,0],[30,90]]);
 
-translate([40,9,0]) {
-  cube([40,12,40], center=true);
+translate([35,14,0]) {
+  cube([40,19,40], center=true);
 }
 
 
-translate([30,24,0]) {
-  cube([40,12,40], center=true);
+translate([20,102,0]) {
+  cube([40,150,40], center=true);
 }
 }
