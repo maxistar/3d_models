@@ -18,7 +18,7 @@ generateBoxBottom = true;
 // Should the top of the main box be generated
 generateBoxTop = true;
 // Should the latches be generated
-generateLatches = true;
+generateLatches = false;
 // Should the gasket be generated.  NOTE: The gasket will still only be generated if the boxSealType is = 1 (Gasket)
 generateGasket = true;
 // Use this option to generate a test gasket and casket insert.  This is so you can do a small print to test your tolerances before printing a full box.  You will need to separate/split the in the slicer and print them one at a time.  This "sample case rim(where the gasket will be inserted)" in your filament of choice, and the gasket itself in TPU.
@@ -56,9 +56,9 @@ internalBoxWidthXMm = 150; // .1
 // The length(Y) of the inside box wall in MM
 internalboxLengthYMm = 70; // .1
 // The internal height on the box top
-internalBoxTopHeightZMm = 20; // .1
+internalBoxTopHeightZMm = 25; // .1
 // The internal height on the box bottom
-internalboxBottomHeightZMm = 20; // .1
+internalboxBottomHeightZMm = 25; // .1
 
 // The width on the box wall and floor.  (NOTE: If you want square inside corners, the boxWallWidthMm must be > the  boxChamferRadiusMm.)
 boxWallWidthMm = 3.0; // [1:0.1:10]
@@ -103,8 +103,18 @@ openingTolerance = 0.1; // .05
 // **** Settings for adding dividers **** 
 // **************************************
 
-// The number of horixontal sections (the number of dividers = countainerWidthXSections - 1)
-countainerWidthXSections = 1; //[1:20]
+// The number of horizontal sections in the top (the number of dividers = countainerTopWidthXSections - 1)
+countainerTopWidthXSections = 1; //[1:20]
+// The number of horizontal sections in the bottom (the number of dividers = countainerBottomWidthXSections - 1)
+countainerBottomWidthXSections = 2; //[1:20]
+// Height of the top horizontal dividers
+containerTopXSectionsHeight = 20; // .1
+// Height of the bottom horizontal dividers
+containerBottomXSectionsHeight = 20; // .1
+// Add a perimeter step inside the top
+containerTopUsePerimeterStep = true;
+// Add a perimeter step inside the bottom
+containerBottomUsePerimeterStep = true;
 // This is the number of horixontal dividers to skip, this will effectively make a larger section followed by smaller ones
 numCountainerWidthXSectionsToSkip = 0; // 1
 // The number of virtical sections (the number of dividers = boxLengthYSections - 1)
@@ -271,7 +281,8 @@ translate([0,0,closedBoxZOffset])
                 BoxTop(true);
             }
             else {
-            translate([0,hingeRadiusMm*2,boxTopHeightZMm])
+            // Lay the top beside the bottom with hinge holes aligned
+            translate([0,0,boxTopHeightZMm])
                 translate([0,(boxLengthYMm+rimWidthMm+hingeRadiusMm+openingTolerance)*2, openingTolerance]) rotate([-180,0,0])
                     BoxTop(true);
             }
@@ -342,8 +353,11 @@ module BoxTop(isStdHinge) {
     }
     rotate([180,0,0]) translate([0,-boxLengthYMm,-openingTolerance]) 
         union() {
-            BoxLengthXSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, false);
+            BoxLengthXSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, false, countainerTopWidthXSections, containerTopXSectionsHeight);
             BoxWidthYSeparators(boxSectionSeparatorWidth,boxTopHeightZMm, true);
+            if(containerTopUsePerimeterStep) {
+                BoxPerimeterStep(boxSectionSeparatorWidth, boxTopHeightZMm, containerTopXSectionsHeight);
+            }
         }
 }
 
@@ -379,8 +393,11 @@ module BoxBottom(isStdHinge) {
     }
     
     union() {
-        BoxLengthXSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false);
+        BoxLengthXSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false, countainerBottomWidthXSections, containerBottomXSectionsHeight);
         BoxWidthYSeparators(boxSectionSeparatorWidth,boxBottomHeightZMm, false);
+        if(containerBottomUsePerimeterStep) {
+            BoxPerimeterStep(boxSectionSeparatorWidth, boxBottomHeightZMm, containerBottomXSectionsHeight);
+        }
     }
 }
 
@@ -696,6 +713,8 @@ module BotomStandardHinge() {
     hingeInsideWidthMm = hingeTotalWidthMm - (2*hingeOutsideWidth) - (2*hingeToleranceMm);
 
     hingeSpacing = (boxWidthXMm - (numberOfHinges*hingeTotalWidthMm)) / (numberOfHinges + 1);
+    hingePinRadius = hingeScrewLargeRadiusMm - hingeToleranceMm;  // leave clearance inside the top hinge hole
+    hingePinLength = hingeInsideWidthMm+(hingeOutsideWidth*2)+(hingeToleranceMm*2)+.2;
 
     translate([0,rimWidthMm,0]) // add back in the rim width
         for (h =[1:numberOfHinges]) { 
@@ -708,46 +727,45 @@ module BotomStandardHinge() {
                         : hingeCenterOffsetMm;
             hingeX = (h*hingeSpacing)+((h-1)*hingeTotalWidthMm)+hingeOutsideWidth+hingeToleranceMm+actualHingeCenterOffsetMm;
             
-            difference () {
-                union() {
-                    // Main hinge cylinder
-                    translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                        cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
-                    translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                        cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
-                    
-                    
-                    // ribs
-                    translate([hingeX-hingeToleranceMm,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
-                    translate([hingeX+hingeInsideWidthMm+hingeToleranceMm+hingeOutsideWidth,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
-                    
-                    // Attach the hinge to the top
-                    adjustment = sqrt((hingeRadiusMm^2)/2);
-                    hingeConnectorHeight = sqrt(hingeRadiusMm^2+hingeRadiusMm^2) + (hingeRadiusMm-adjustment);    
-                    
-                    difference() {
-                        union() {
-                            translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
-                                translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
-                                    rotate([45,0,0])
-                                        // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
-                                        translate([0,-hingeRadiusMm*6,0])
-                                            cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
-                            translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
-                                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
-                                    rotate([45,0,0])
-                                        // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
-                                        translate([0,-hingeRadiusMm*6,0])
-                                            cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
-                        } 
-                        // TODO: fix this cutout as it doesn't work when the case is very curved!!!                  
-                        //ranslate([0,boxLengthYMm-boxWallWidthMm-boxLengthYMm,-boxBottomHeightZMm])
-                        //   cube([boxWidthXMm,boxLengthYMm,boxBottomHeightZMm]);
-                    }
-                };
-                // Cut the screw hole out
+            union() {
+                // Main hinge cylinder
+                translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
+                    cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
+                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
+                    cylinder(hingeOutsideWidth,hingeRadiusMm,hingeRadiusMm, $fn=hingePolyLvl);
+                
+                // Solid pin to print-in-place through the paired top hinge
                 translate([hingeX-((hingeOutsideWidth+hingeToleranceMm)+.1),boxLengthYMm+hingeRadiusMm+openingTolerance,openingTolerance/2]) rotate([0,90,0])
-                    cylinder(hingeInsideWidthMm+(hingeOutsideWidth*2)+(hingeToleranceMm*2)+.2,hingeScrewSmallRadiusMm,hingeScrewSmallRadiusMm, $fn=100);
+                    cylinder(hingePinLength,hingePinRadius,hingePinRadius, $fn=100);
+                
+                
+                // ribs
+                translate([hingeX-hingeToleranceMm,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
+                translate([hingeX+hingeInsideWidthMm+hingeToleranceMm+hingeOutsideWidth,boxLengthYMm-(boxChamferRadiusMm+rimWidthMm),0]) rotate([90,0,-90]) linear_extrude(hingeOutsideWidth) Wall2D(boxWallWidthMm, supportRibThickness, boxBottomHeightZMm, false);
+                
+                // Attach the hinge to the top
+                adjustment = sqrt((hingeRadiusMm^2)/2);
+                hingeConnectorHeight = sqrt(hingeRadiusMm^2+hingeRadiusMm^2) + (hingeRadiusMm-adjustment);    
+                
+                difference() {
+                    union() {
+                        translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
+                            translate([hingeX-(hingeOutsideWidth+hingeToleranceMm),(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
+                                rotate([45,0,0])
+                                    // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
+                                    translate([0,-hingeRadiusMm*6,0])
+                                        cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
+                        translate([0, adjustment, -(hingeRadiusMm-adjustment)-(2*adjustment)])
+                            translate([hingeX+hingeInsideWidthMm+hingeToleranceMm,(boxLengthYMm+openingTolerance+hingeRadiusMm),hingeRadiusMm+(openingTolerance/2)])
+                                rotate([45,0,0])
+                                    // TODO: calculate the langth of the attachment piece, don't just use 6 :-/
+                                    translate([0,-hingeRadiusMm*6,0])
+                                        cube([hingeOutsideWidth, hingeRadiusMm*6, hingeConnectorHeight]);
+                    } 
+                    // TODO: fix this cutout as it doesn't work when the case is very curved!!!                  
+                    //ranslate([0,boxLengthYMm-boxWallWidthMm-boxLengthYMm,-boxBottomHeightZMm])
+                    //   cube([boxWidthXMm,boxLengthYMm,boxBottomHeightZMm]);
+                }
         }
     }
 }
@@ -808,15 +826,16 @@ module TopStandardHinge() {
 
 
 
-module BoxLengthXSeparators(separatorWidth, height, isSkipFromEnd) {
+module BoxLengthXSeparators(separatorWidth, height, isSkipFromEnd, widthXSections, sectionsHeight) {
     
     skipFromBegining = isSkipFromEnd ? 0 : numCountainerWidthXSectionsToSkip;
     skipFromEnd = isSkipFromEnd ? numCountainerWidthXSectionsToSkip : 0;
+    actualHeight = min(height, sectionsHeight);
     
-    if(countainerWidthXSections > 1) {
-        for (y =[1+skipFromBegining:(countainerWidthXSections-1-skipFromEnd)]) {
-            translate([(((boxWidthXMm-(2*boxWallWidthMm))/countainerWidthXSections)*y)+(boxWallWidthMm-(separatorWidth/2)),boxWallWidthMm,-(height-boxWallWidthMm)]) 
-                BoxInsert(boxLengthYMm, height, separatorWidth);
+    if(widthXSections > 1) {
+        for (y =[1+skipFromBegining:(widthXSections-1-skipFromEnd)]) {
+            translate([(((boxWidthXMm-(2*boxWallWidthMm))/widthXSections)*y)+(boxWallWidthMm-(separatorWidth/2)),boxWallWidthMm,-(height-boxWallWidthMm)]) 
+                BoxInsert(boxLengthYMm, actualHeight, separatorWidth);
         }
     }
     
@@ -835,6 +854,19 @@ module BoxWidthYSeparators(separatorWidth, height, isSkipFromEnd) {
         }
     }
     
+}
+
+module BoxPerimeterStep(separatorWidth, height, sectionsHeight) {
+    actualHeight = min(height, sectionsHeight);
+    stepHeight = actualHeight - boxWallWidthMm;
+    if(stepHeight > 0) {
+        translate([boxWallWidthMm-(separatorWidth/2), boxWallWidthMm-(separatorWidth/2), -(height-boxWallWidthMm)])
+            difference() {
+                cube([(boxWidthXMm-(2*boxWallWidthMm))+separatorWidth, (boxLengthYMm-(2*boxWallWidthMm))+separatorWidth, stepHeight]);
+                translate([separatorWidth, separatorWidth, 0])
+                    cube([(boxWidthXMm-(2*boxWallWidthMm))-separatorWidth, (boxLengthYMm-(2*boxWallWidthMm))-separatorWidth, stepHeight+1]);
+            }
+    }
 }
 
 

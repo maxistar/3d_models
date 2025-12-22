@@ -196,6 +196,21 @@ module base_holder() {
   }
 }
 
+module base_holder_short() {
+  handLength = 7;
+  translate([handLength/2, 0, 0]) {
+    rotate([0, 90, 0]) {
+      cylinder(r=smallConnectorCylinderRadius, h=handLength, center=true);
+    }
+  }
+  difference() {
+    sphere(r=connectorBallRadius + tentionOffset);
+
+    translate([-cuttingCubeSide / 2 - connectorBallRadius + smallCutOffset, 0, 0])
+      cube([cuttingCubeSide, cuttingCubeSide, cuttingCubeSide], center=true);
+  }
+}
+
 //terminal_connector();
 
 rotate([0, 180, 0])
