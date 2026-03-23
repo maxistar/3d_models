@@ -15,7 +15,31 @@ You can see models visualisations [here](https://projects.maxistar.me/3d_models/
 1. Open a `.scad` file in [OpenSCAD](https://openscad.org/).
 2. Review the parameters defined near the top of the file and adjust dimensions to fit your hardware or use-case.
 3. Render (`F6`) to create a solid mesh, then export it as `.stl` or `.3mf` for slicing.
-4. Several designs expose booleans (for example `showTopPart`, `showCenter`, `showBottomPart`) that let you print assemblies in separate pieces. Toggle them as needed before export.【F:openscad/cable_organizer/spull_complete.scad†L108-L136】【F:openscad/cable_organizer/spull_bigger_thin.scad†L1-L18】
+4. Several designs expose booleans (for example `showTopPart`, `showCenter`, `showBottomPart`) that let you print assemblies in separate pieces. Toggle them as needed before export.
+
+## Regenerating STL/PNG outputs
+
+The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds files whose `.scad` source has changed since the last run.
+
+**Requirements:** [OpenSCAD](https://openscad.org/) must be installed and available on `PATH`.
+
+```bash
+# Rebuild only changed files in a folder
+./scripts/process.sh openscad/honeycomb/
+
+# Force full rebuild of all files in a folder
+./scripts/process.sh --force openscad/cable_organizer/
+
+# Rebuild all folders (run from repo root)
+for dir in openscad/*/; do
+  ./scripts/process.sh "$dir"
+done
+```
+
+At the end of each run the script prints a summary:
+```
+✅ Done: 2 built, 11 skipped
+```
 
 ## Model catalog
 
