@@ -1,7 +1,9 @@
 [project]
-name = "build123d"
+name = "3d-models-build123d"
 version = "0.1.0"
-description = "Add your description here"
+description = "Parametric 3D models built with build123d"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "build123d>=0.10.0",
+]
