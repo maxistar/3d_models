@@ -24,4 +24,7 @@ pnpm-debug.log*
 .idea/
 
 /public/openscad
+
+/public/build123d
+
 /public/3d_models/openscad
