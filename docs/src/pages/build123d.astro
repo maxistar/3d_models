@@ -1,13 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import STLViewerGallery from '../components/STLViewerGallery';
+
+const stlFiles = [
+  '/3d_models/build123d/simple/mug.stl',
+  '/3d_models/build123d/simple/gridfinity_1x1.stl',
+];
 ---
 
 <Layout>
   <div>
-    <h2>build123d examples</h2>
-    <ul>
-      <li><a href="/3d_models/mug">Mug</a></li>
-      <li><a href="/3d_models/gridfinity_1x1">Gridfinity 1x1 bin (1U)</a></li>
-    </ul>
+    <STLViewerGallery client:only="react" urls={stlFiles} />
   </div>
 </Layout>
