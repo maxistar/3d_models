@@ -31,6 +31,7 @@ Examples:
 uv run python simple/mug.py
 uv run python simple/gridfinity_1x1.py
 uv run python simple/honeycomb_wall_8x8.py
+uv run python simple/cable_winder.py
 ```
 
 ## Models
@@ -40,3 +41,4 @@ uv run python simple/honeycomb_wall_8x8.py
 | `simple/mug.py` | Parametric mug with handle — adjust `HEIGHT`, `OUTER_R`, `WALL` at the top of the file |
 | `simple/gridfinity_1x1.py` | Simple Gridfinity 1x1 bin (1U) |
 | `simple/honeycomb_wall_8x8.py` | Honeycomb storage wall panel, 8x8 elements |
+| `simple/cable_winder.py` | Parametric cable-winder spool with toroidal wire channel |
