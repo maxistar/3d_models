@@ -1,4 +1,5 @@
-# build123d model
+# build123d models
+
 Parametric 3D models built programmatically with [build123d](https://build123d.readthedocs.io/).
 
 Unlike OpenSCAD, build123d works with real BREP geometry — enabling proper fillets,
