@@ -9,18 +9,20 @@ Usage:
 
 from build123d import *
 from pathlib import Path
+from ocp_vscode import show
 
 # ── Parameters ────────────────────────────────────────────────────────────────
 
 HEIGHT        = 95   # mm  total height
 OUTER_R       = 40   # mm  outer radius of the body
 WALL          = 3    # mm  wall thickness (sides and bottom)
+
 HANDLE_REACH  = 20   # mm  how far the handle sticks out from the mug wall
 HANDLE_R      = 5    # mm  cross-section radius of the handle tube
 HANDLE_GAP    = 1.0  # mm  fine adjustment for handle centerline position
 
-HANDLE_BOTTOM = 0.20   # fraction of height where handle attaches at bottom
-HANDLE_TOP    = 0.80   # fraction of height where handle attaches at top
+HANDLE_BOTTOM = 0.40   # fraction of height where handle attaches at bottom
+HANDLE_TOP    = 0.60   # fraction of height where handle attaches at top
 
 # ── Mug body ──────────────────────────────────────────────────────────────────
 
@@ -56,3 +58,4 @@ mug = body.fuse(handle)
 out = Path(__file__).parent / "mug.stl"
 export_stl(mug, str(out))
 print(f"✅  Exported {out}")
+show(mug)
