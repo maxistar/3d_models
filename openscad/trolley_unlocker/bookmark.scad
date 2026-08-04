@@ -55,11 +55,11 @@ cube([22,22,22], center=true);
 module simple_text() {
     translate([-8, 2.5, 0.8]) {
       linear_extrude(0.4)
-        text("Neu", size=5.5);
+        text("Neu", font="Liberation Sans:style=Bold",  size=6.5);
 
-      translate([-1, -6.5, 0])
+      translate([-0, -6.5, 0])
         linear_extrude(0.4)
-          text("Conf", size=6.5);
+          text("Conf", font="Liberation Sans", size=5.5);
     }
 }
 
