@@ -19,7 +19,7 @@ You can see models visualisations [here](https://projects.maxistar.me/3d_models/
 
 ## Regenerating STL/PNG outputs
 
-The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds files whose `.scad` source has changed since the last run.
+The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds files whose `.scad` source has changed since the last run. Generated `.stl` files are exported in ASCII STL format so mesh changes remain visible in Git diffs.
 
 **Requirements:** [OpenSCAD](https://openscad.org/) must be installed and available on `PATH`.
 

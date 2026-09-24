@@ -72,7 +72,7 @@ for scad_path in "${scad_files[@]}"; do
 
   if [[ "$needs_rebuild" == true ]]; then
     echo "  • $name"
-    openscad --export-format binstl -o "$stl_path" "$scad_path"
+    openscad --export-format asciistl -o "$stl_path" "$scad_path"
     openscad -o "$png_path" "$scad_path"
     echo "    ↳ ${base##*/}.stl"
     echo "    ↳ ${base##*/}.png"

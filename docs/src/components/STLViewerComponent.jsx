@@ -1,3 +1,4 @@
+import '../utils/threeLoaderUtilsCompat.js';
 import React, { useCallback, useRef } from 'react';
 import { StlViewer } from 'react-stl-viewer';
 

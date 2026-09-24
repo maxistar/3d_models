@@ -1,3 +1,4 @@
+import '../utils/threeLoaderUtilsCompat.js';
 import React, { useState } from 'react';
 import { StlViewer } from 'react-stl-viewer';
 
