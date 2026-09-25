@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - master
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -37,8 +39,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Link STL models for build
-        run: cp -r ../openscad public/openscad && ls public/openscad
+      - name: Copy STL models for build
+        run: |
+          rm -rf public/openscad public/build123d
+          cp -r ../openscad public/openscad
+          mkdir -p public/build123d/simple
+          cp ../build123d/simple/*.stl public/build123d/simple/
+          ls public/openscad
+          ls public/build123d/simple
 
       - name: Build project
         run: npm run build
