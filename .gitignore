@@ -1,3 +1,6 @@
 out
 *.3mf
 .vscode
+.idea
+.DS_Store
+.pi

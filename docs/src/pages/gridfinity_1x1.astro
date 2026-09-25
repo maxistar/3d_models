@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import STLViewerComponent from '../components/STLViewerComponent.jsx';
+
+const stlUrl = '/3d_models/build123d/simple/gridfinity_1x1.stl';
+---
+
+<Layout>
+  <div>
+    <STLViewerComponent client:only="react" url={stlUrl} />
+  </div>
+</Layout>

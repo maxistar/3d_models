@@ -1,19 +1,24 @@
 $fn = 200;
 
+
+module simple_text() {
+    translate([-8, 2.5, 0.8]) {
+      linear_extrude(0.4)
+        text("Neu", size=5.5);
+
+      translate([-1, -6.5, 0])
+        linear_extrude(0.4)
+          text("Conf", size=6.5);
+    }
+}
+
 module simple() {
   difference() {
     cylinder(d=24.15, h=2.25, center=true);
     translate([0, -8, 0])
       cylinder(d=4, h=5, center=true);
-
-    translate([-8, 2.5, 0.8]) {
-      linear_extrude(4)
-        text("Neu", size=5.5);
-
-      translate([-1, -6.5, 0])
-        linear_extrude(4)
-          text("Conf", size=6.5);
-    }
+      
+      simple_text();
   }
 }
 
@@ -54,11 +59,18 @@ module coin_with_handle() {
     }
   }
 
-  translate([3, -2.5, 0.5]) {
+  translate([2, -2.5, 0.5]) {
     linear_extrude(2, center=true)
-      text("NeuConf", size=6);
+      text("NeuConf26", size=5);
   }
 }
 
-//simple();
-coin_with_handle();
+for(i=[0:10]) {
+    for(j=[0:3]) {
+   translate([i*30,j*30,0]) { 
+     //simple_text();
+     simple();
+    }
+   }
+}
+//coin_with_handle();

@@ -1,6 +1,11 @@
 # Astro Starter Kit: Basics
 
 
+## Create links to models
+
+`ln -s ../../build123d public/build123d`
+`ln -s ../../openscad public/openscad`
+
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:

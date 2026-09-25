@@ -15,6 +15,6 @@
     "astro": "^5.14.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-stl-viewer": "^2.5.0"
+    "react-stl-viewer": "https://github.com/maxistar/react-stl-viewer/archive/d71c73b7f3fe8899e4c7b8406cfc05d85dfbe7f7.tar.gz"
   }
 }
