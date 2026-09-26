@@ -131,5 +131,5 @@ if __name__ == "__main__":
     model = make_cable_winder(params)
 
     out = Path(__file__).parent / "cable_winder.stl"
-    export_stl(model, str(out))
+    export_stl(model, str(out), ascii_format=True)
     print(f"✅  Exported {out}")
