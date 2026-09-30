@@ -63,8 +63,8 @@ module phone_cover() {
   }
 }
 
-//translate([0,0,10])
-//  phone_cover();
+translate([0,0,10])
+  phone_cover();
 
 module cover() {
   linear_extrude(2)
@@ -106,7 +106,7 @@ module locker() {
   hull() {
 
     translate([-phone_width, 0, 0]) {
-    cylinder(h=0.5, r=10);
+      cylinder(h=0.5, r=10);
     }
 
     translate([-phone_width * 2 - 25, 0, 0]) {
@@ -131,3 +131,10 @@ translate([55, 0])
 translate([0, 0, origin_thickness / 2])
   cube([origin_width, origin_height, origin_thickness], center=true);
 */
+
+phone1_width = 74.5;
+phone1_length = 156;
+phone1_thickness = 8.8;
+
+translate([0,0,10])
+   cube([phone1_width, phone1_length, phone1_thickness], center=true);
