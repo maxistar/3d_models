@@ -1,7 +1,7 @@
 
 $fn = 100;
-phone_width = 26;
-phone_height = 68;
+phone_width = 30;
+phone_height = 70;
 round_padius = 10;
 z_scale = 0.8;
 
