@@ -205,7 +205,7 @@ module double_cover() {
       square([100, phone_height * 2], center=true);
 }
 
-double_cover();
+//double_cover();
 
 phone1_width = 74.5;
 phone1_length = 156;
