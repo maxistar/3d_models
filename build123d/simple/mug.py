@@ -9,7 +9,11 @@ Usage:
 
 from build123d import *
 from pathlib import Path
-from ocp_vscode import show
+
+try:
+    from ocp_vscode import show
+except ModuleNotFoundError:
+    show = None
 
 # ── Parameters ────────────────────────────────────────────────────────────────
 
@@ -56,6 +60,7 @@ handle = Solid.sweep(profile.faces()[0], [arc])
 mug = body.fuse(handle)
 
 out = Path(__file__).parent / "mug.stl"
-export_stl(mug, str(out))
+export_stl(mug, str(out), ascii_format=True)
 print(f"✅  Exported {out}")
-show(mug)
+if show is not None:
+    show(mug)

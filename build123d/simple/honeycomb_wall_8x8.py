@@ -42,5 +42,5 @@ for row in range(ROWS):
 # ── Export ────────────────────────────────────────────────────────────────────
 
 out = Path(__file__).parent / "honeycomb_wall_8x8.stl"
-export_stl(panel, str(out))
+export_stl(panel, str(out), ascii_format=True)
 print(f"✅  Exported {out}")

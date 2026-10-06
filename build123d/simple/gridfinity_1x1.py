@@ -26,5 +26,5 @@ bin_1x1 = outer.cut(inner)
 # ── Export ────────────────────────────────────────────────────────────────────
 
 out = Path(__file__).parent / "gridfinity_1x1.stl"
-export_stl(bin_1x1, str(out))
+export_stl(bin_1x1, str(out), ascii_format=True)
 print(f"✅  Exported {out}")
