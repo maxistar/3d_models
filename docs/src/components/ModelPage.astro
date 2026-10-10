@@ -7,10 +7,14 @@ const items = groups.flatMap((group) => group.items);
 const stlFiles = items.map((item) => item.assetUrl);
 ---
 
-<Layout>
+<Layout
+  title={title}
+  backHref="/3d_models/openscad/"
+  backLabel="OpenSCAD models"
+  activeSection="openscad"
+>
   <main>
     <p>
-      <a href="/3d_models/openscad/">OpenSCAD models</a>
       {canonicalPath && <> · <a href={canonicalPath}>Canonical page</a></>}
     </p>
     <h1>{title}</h1>

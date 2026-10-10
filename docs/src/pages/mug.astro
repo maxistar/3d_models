@@ -5,7 +5,7 @@ import STLViewerComponent from '../components/STLViewerComponent.jsx';
 const stlUrl = '/3d_models/build123d/simple/mug.stl';
 ---
 
-<Layout>
+<Layout title="Mug" backHref="/3d_models/build123d/" backLabel="build123d models" activeSection="build123d">
   <div>
     <STLViewerComponent client:only="react" url={stlUrl} />
   </div>

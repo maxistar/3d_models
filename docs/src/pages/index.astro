@@ -5,12 +5,10 @@ const modelUrl = '/3d_models/openscad/blocknote/blocknote_cover.stl';
 
 ---
 
-<Layout>
-	<div>
+<Layout title="Home" activeSection="home">
+	<main>
+		<h1>3D models</h1>
+		<p>Parametric models for printing and making.</p>
 		<STLViewerComponent client:only="react" url={modelUrl} />
-		<ul>
-			<li><a href="/3d_models/openscad/">OpenSCAD models</a></li>
-			<li><a href="/3d_models/build123d/">build123d models</a></li>
-		</ul>
-	</div>
+	</main>
 </Layout>

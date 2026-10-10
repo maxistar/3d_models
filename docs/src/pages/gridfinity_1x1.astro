@@ -5,7 +5,7 @@ import STLViewerComponent from '../components/STLViewerComponent.jsx';
 const stlUrl = '/3d_models/build123d/simple/gridfinity_1x1.stl';
 ---
 
-<Layout>
+<Layout title="Gridfinity 1x1" backHref="/3d_models/build123d/" backLabel="build123d models" activeSection="build123d">
   <div>
     <STLViewerComponent client:only="react" url={stlUrl} />
   </div>
