@@ -162,4 +162,4 @@ module panel_with_clips(pin_1 = false, pin_2 = false, pin_3 = false, pin_4 = fal
   }
 }
 
-// end honeycomb_element.scad
+// end _honeycomb_element.scad

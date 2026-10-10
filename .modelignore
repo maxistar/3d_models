@@ -1,0 +1,8 @@
+# Sources excluded from automatic STL/PNG generation and model discovery.
+# Paths are relative to the repository root. Keep entries specific when the
+# same basename may have a different meaning in another model directory.
+
+# External RuggedBoxV1 sources require a different OpenSCAD version and are
+# intentionally not part of the generated model catalog.
+openscad/helpinghand/RuggedBoxV1.scad
+openscad/rugged_box/RuggedBoxV1.scad

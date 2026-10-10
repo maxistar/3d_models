@@ -7,7 +7,7 @@ r_outer = h_outer * 2/sqrt(3);
 
 
 
-use <honeycomb_element.scad>;
+use <_honeycomb_element.scad>;
 
 
 module panel_9x9() {

@@ -19,7 +19,9 @@ You can see models visualisations [here](https://projects.maxistar.me/3d_models/
 
 ## Regenerating STL/PNG outputs
 
-The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds files whose `.scad` source has changed since the last run. Generated `.stl` files are exported in ASCII STL format so mesh changes remain visible in Git diffs.
+The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds eligible files whose `.scad` source has changed since the last run. Generated `.stl` files are exported in ASCII STL format so mesh changes remain visible in Git diffs.
+
+Model files with a shared meaningful prefix form a default project group. The `honeycomb` directory is an explicit exception and remains one project even though its component files use different prefixes. Files whose basename starts with `_` are internal libraries and are not exported automatically. Additional incompatible sources can be listed by repository-relative path in `.modelignore`; those files are skipped by batch generation and future model discovery. `RuggedBoxV1.scad` is excluded this way because it requires a different OpenSCAD version.
 
 **Requirements:** [OpenSCAD](https://openscad.org/) must be installed and available on `PATH`.
 
@@ -50,7 +52,7 @@ At the end of each run the script prints a summary:
 - **`spull_simple.scad`** – Simplified body that replaces the sculpted shell with a slimmer form, adds posts for wrapping cable ends, and still accepts the same adjustable spool core.【F:openscad/cable_organizer/spull_simple.scad†L1-L132】【F:openscad/cable_organizer/spull_simple.scad†L200-L237】
 
 ### Modular honeycomb wall system (`openscad/honeycomb`)
-- **`honeycomb_element.scad`** – Defines the base hexagonal cell with configurable clips and locking pins on each of the six faces. Booleans (`pin_1…pin_6`, `slot_1…slot_6`) let you create tiles that interlock on specific sides.【F:openscad/honeycomb/honeycomb_element.scad†L1-L116】
+- **`_honeycomb_element.scad`** – Internal library defining the base hexagonal cell with configurable clips and locking pins on each of the six faces. Booleans (`pin_1…pin_6`, `slot_1…slot_6`) let you create tiles that interlock on specific sides.【F:openscad/honeycomb/_honeycomb_element.scad†L1-L116】
 - **`panel_9x9.scad`** – Builds a 9×9 array of cells, automatically mixing clip and pin configurations for edges and corners so large panels stay aligned when assembled.【F:openscad/honeycomb/panel_9x9.scad†L1-L29】
 - **Perimeter and corner pieces** – Files such as `perimeter_top_double.scad`, `perimeter_bottom_single_v2.scad`, and `corner_7.scad` trim cells to create tidy borders, corners, or side caps when mounting panels to a wall.【F:openscad/honeycomb/corner_7.scad†L1-L49】【F:openscad/honeycomb/wall.scad†L1-L132】
 - **`wall.scad`** – Example assembly that positions multiple panels plus perimeters and corners to form a full wall layout, useful as a reference when arranging your own configurations.【F:openscad/honeycomb/wall.scad†L1-L154】

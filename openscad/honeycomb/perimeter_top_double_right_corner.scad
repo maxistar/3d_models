@@ -4,7 +4,7 @@ h_outer = 10+1.8;
 r_outer = h_outer * 2/sqrt(3);
 
 
-use <honeycomb_element.scad>;
+use <_honeycomb_element.scad>;
 
 
 module perimeter_top_item(corner_item=false) {
@@ -94,4 +94,3 @@ module perimeter_bottom() {
     
 perimeter_bottom();
     
-

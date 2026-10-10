@@ -3,7 +3,7 @@ $fn = 50;
 h_outer = 10 + 1.8;
 r_outer = h_outer * 2 / sqrt(3);
 
-use <honeycomb_element.scad>;
+use <_honeycomb_element.scad>;
 
 module panel_9x9() {
   for (i = [0:9]) {

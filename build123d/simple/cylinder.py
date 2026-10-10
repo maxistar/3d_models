@@ -20,6 +20,6 @@ def make_cylinder(radius: float = RADIUS, height: float = HEIGHT) -> Part:
 
 if __name__ == "__main__":
     cylinder = make_cylinder()
-    out = Path(__file__).parent / "cylinder_r20_h5.stl"
+    out = Path(__file__).with_suffix(".stl")
     export_stl(cylinder, str(out), ascii_format=True)
     print(f"✅ Exported {out}")
