@@ -1,9 +1,13 @@
 ---
 import ModelPage from '../components/ModelPage.astro';
-import { groupsForLegacyRoute } from '../lib/modelCatalog';
+import { canonicalPathForLegacyRoute, groupsForLegacyRoute } from '../lib/modelCatalog';
 
 const groups = groupsForLegacyRoute('honeycomb');
 
 ---
 
-<ModelPage title="Honeycomb" groups={groups} canonicalPath="/3d_models/openscad/honeycomb" />
+<ModelPage
+  title="Honeycomb"
+  groups={groups}
+  canonicalPath={canonicalPathForLegacyRoute('honeycomb')}
+/>

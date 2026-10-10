@@ -5,18 +5,37 @@ import STLViewerGallery from './STLViewerGallery';
 const { title, groups = [], canonicalPath } = Astro.props;
 const items = groups.flatMap((group) => group.items);
 const stlFiles = items.map((item) => item.assetUrl);
+const directories = [...new Set(groups.map((group) => group.directory))];
+const directory = directories.length === 1 && directories[0] !== '.'
+  ? groups[0]
+  : undefined;
+const breadcrumbs = [
+  { label: 'OpenSCAD', href: '/3d_models/openscad/' },
+  ...(directory ? [{ label: directory.directory, href: directory.directoryRoutePath }] : []),
+  { label: title },
+];
 ---
 
 <Layout
   title={title}
-  backHref="/3d_models/openscad/"
-  backLabel="OpenSCAD models"
+  backHref={directory?.directoryRoutePath ?? '/3d_models/openscad/'}
+  backLabel={directory?.directory ?? 'OpenSCAD models'}
+  canonicalPath={canonicalPath}
   activeSection="openscad"
 >
   <main>
-    <p>
-      {canonicalPath && <> · <a href={canonicalPath}>Canonical page</a></>}
-    </p>
+    <nav aria-label="Breadcrumbs" class="breadcrumbs">
+      {breadcrumbs.map((crumb, index) => (
+        <>
+          {index > 0 && <span aria-hidden="true">/</span>}
+          {crumb.href ? <a href={crumb.href}>{crumb.label}</a> : <span>{crumb.label}</span>}
+        </>
+      ))}
+    </nav>
+
+    {canonicalPath && (
+      <p><a href={canonicalPath}>Open canonical page</a></p>
+    )}
     <h1>{title}</h1>
 
     {items.length > 0 ? (
@@ -36,3 +55,17 @@ const stlFiles = items.map((item) => item.assetUrl);
     )}
   </main>
 </Layout>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumbs a {
+    color: inherit;
+  }
+</style>

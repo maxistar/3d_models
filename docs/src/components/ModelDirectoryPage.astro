@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const { directory, groups = [] } = Astro.props;
+---
+
+<Layout
+  title={directory.title}
+  backHref="/3d_models/openscad/"
+  backLabel="OpenSCAD models"
+  activeSection="openscad"
+>
+  <main>
+    <nav aria-label="Breadcrumbs" class="breadcrumbs">
+      <a href="/3d_models/openscad/">OpenSCAD</a>
+      <span aria-hidden="true">/</span>
+      <span>{directory.title}</span>
+    </nav>
+
+    <h1>{directory.title}</h1>
+    <p>Source directory: <code>{directory.path}</code></p>
+
+    <nav aria-label={`${directory.title} model groups`}>
+      <ul>
+        {groups.map((group) => (
+          <li>
+            <a href={group.routePath}>{group.title}</a>
+            <span> ({group.items.length} STL)</span>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </main>
+</Layout>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .breadcrumbs a {
+    color: inherit;
+  }
+</style>

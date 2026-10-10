@@ -64,6 +64,15 @@ function slugify(value) {
   return slug || 'model';
 }
 
+function routeSegmentsForDirectory(directory) {
+  return directory === '.' ? [] : directory.split('/').map(slugify);
+}
+
+function routePathForSegments(basePath, segments) {
+  const suffix = segments.join('/');
+  return suffix ? `${basePath}/${suffix}/` : `${basePath}/`;
+}
+
 function firstPrefix(stem) {
   return stem.split('_')[0] || stem;
 }
@@ -112,7 +121,7 @@ function buildLegacyRoutes(groups) {
   return Object.fromEntries(
     Object.entries(definitions).map(([route, matches]) => [
       route,
-      groups.filter(matches).map((group) => group.slug),
+      groups.filter(matches).map((group) => group.id),
     ]),
   );
 }
@@ -172,16 +181,25 @@ export function buildCatalog({
 
   const groups = [];
   for (const [directory, items] of [...byDirectory.entries()].sort()) {
+    const directorySegments = routeSegmentsForDirectory(directory);
+    const directoryRoutePath = routePathForSegments(assetBase, directorySegments);
+
     for (const family of groupDirectoryItems(
       items.sort((left, right) => left.sourcePath.localeCompare(right.sourcePath)),
       directory,
     )) {
       const slug = slugify(family.name);
+      const id = directory === '.' ? slug : `${directory}/${slug}`;
       groups.push({
+        id,
         slug,
         name: family.name,
         title: humanize(family.name),
         directory,
+        directorySegments,
+        directoryRoutePath,
+        routePath: `${directoryRoutePath}${slug}/`,
+        flatRoutePath: `${assetBase}/${slug}/`,
         items: [...family.items]
           .sort((left, right) => {
             if (left.stem === family.name) return -1;
@@ -202,21 +220,81 @@ export function buildCatalog({
 
   const slugOwners = new Map();
   for (const group of groups) {
-    const owner = slugOwners.get(group.slug);
+    const ownerKey = `${group.directory}/${group.slug}`;
+    const owner = slugOwners.get(ownerKey);
     if (owner) {
       throw new Error(
-        `Model group slug collision: "${group.slug}" is used by `
+        `Model group slug collision: "${group.slug}" in directory `
+        + `"${group.directory}" is used by `
         + `${owner.directory}/${owner.name} and ${group.directory}/${group.name}`,
       );
     }
-    slugOwners.set(group.slug, group);
+    slugOwners.set(ownerKey, group);
   }
 
-  groups.sort((left, right) => left.slug.localeCompare(right.slug));
+  groups.sort((left, right) => left.routePath.localeCompare(right.routePath));
+
+  const directories = [...byDirectory.keys()]
+    .sort((left, right) => left.localeCompare(right))
+    .map((directory) => {
+      const routeSegments = routeSegmentsForDirectory(directory);
+      const directoryGroups = groups.filter((group) => group.directory === directory);
+      return {
+        path: directory,
+        name: directory === '.' ? 'root' : directory.split('/').at(-1),
+        title: directory === '.' ? 'root' : directory,
+        routeSegments,
+        routePath: routePathForSegments(assetBase, routeSegments),
+        groupIds: directoryGroups.map((group) => group.id),
+      };
+    });
+
+  const directoryRoutePaths = new Set(
+    directories
+      .filter((directory) => directory.path !== '.')
+      .map((directory) => directory.routePath),
+  );
+  const flatRouteOwners = new Map();
+  for (const group of groups) {
+    const owners = flatRouteOwners.get(group.flatRoutePath) ?? [];
+    owners.push(group);
+    flatRouteOwners.set(group.flatRoutePath, owners);
+  }
+  for (const group of groups) {
+    group.flatRouteAvailable = (
+      flatRouteOwners.get(group.flatRoutePath).length === 1
+      && !directoryRoutePaths.has(group.flatRoutePath)
+    );
+  }
+
+  const routeOwners = new Map();
+  const registerRoute = (routePath, owner) => {
+    const existing = routeOwners.get(routePath);
+    if (existing) {
+      throw new Error(
+        `Public route collision: "${routePath}" is used by `
+        + `${existing} and ${owner}`,
+      );
+    }
+    routeOwners.set(routePath, owner);
+  };
+
+  for (const directory of directories) {
+    if (directory.path !== '.') {
+      registerRoute(directory.routePath, `directory ${directory.path}`);
+    }
+  }
+  for (const group of groups) {
+    registerRoute(group.routePath, `group ${group.id}`);
+    if (group.flatRouteAvailable && group.flatRoutePath !== group.routePath) {
+      registerRoute(group.flatRoutePath, `flat compatibility route for ${group.id}`);
+    }
+  }
 
   return {
     version: 1,
     groups,
+    directories,
     legacyRoutes: buildLegacyRoutes(groups),
     diagnostics: {
       sourceCount: candidates.length + excluded.length + missingOutputs.length,
@@ -246,6 +324,7 @@ function printDiagnostics(catalog) {
   const itemCount = catalog.groups.reduce((total, group) => total + group.items.length, 0);
 
   console.log(`Catalog: ${catalog.groups.length} groups, ${itemCount} model items`);
+  console.log(`Directories: ${catalog.directories.length}`);
   console.log(`Included sources: ${diagnostics.includedSourceCount}`);
   console.log(`Excluded sources: ${diagnostics.excluded.length}`);
   console.log(`Missing STL outputs: ${diagnostics.missingOutputs.length}`);
@@ -259,7 +338,7 @@ function printDiagnostics(catalog) {
 
   console.log('Groups:');
   for (const group of catalog.groups) {
-    console.log(`  • ${group.slug}: ${group.items.length} item(s)`);
+    console.log(`  • ${group.routePath}: ${group.items.length} item(s)`);
   }
 }
 

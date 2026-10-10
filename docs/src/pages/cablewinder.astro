@@ -1,6 +1,6 @@
 ---
 import ModelPage from '../components/ModelPage.astro';
-import { groupsForLegacyRoute } from '../lib/modelCatalog';
+import { canonicalPathForLegacyRoute, groupsForLegacyRoute } from '../lib/modelCatalog';
 
 const groups = groupsForLegacyRoute('cablewinder');
 
@@ -8,4 +8,8 @@ const groups = groupsForLegacyRoute('cablewinder');
 
 ---
 
-<ModelPage title="Cable Organizer" groups={groups} />
+<ModelPage
+  title="Cable Organizer"
+  groups={groups}
+  canonicalPath={canonicalPathForLegacyRoute('cablewinder')}
+/>

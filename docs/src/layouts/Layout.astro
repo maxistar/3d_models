@@ -3,6 +3,7 @@ const {
 	title = 'Maxistar 3D models',
 	backHref,
 	backLabel,
+	canonicalPath,
 	activeSection: requestedSection,
 } = Astro.props;
 
@@ -25,6 +26,7 @@ const activeSection = requestedSection ?? (
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
+		{canonicalPath && <link rel="canonical" href={canonicalPath} />}
 		<title>{title ? `${title} | Maxistar 3D models` : 'Maxistar 3D models'}</title>
 	</head>
 	<body>

@@ -1,19 +1,36 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import modelCatalog from '../../generated/model-catalog';
+import { groupsForDirectory } from '../../lib/modelCatalog';
+
+const rootGroups = groupsForDirectory('.');
 ---
 
 <Layout title="OpenSCAD models" backHref="/3d_models/" backLabel="Home" activeSection="openscad">
   <main>
     <h1>OpenSCAD models</h1>
-    <p>Collections discovered from eligible OpenSCAD source/STL pairs.</p>
+    <p>Source directories discovered from eligible OpenSCAD source/STL pairs.</p>
 
-    <nav aria-label="OpenSCAD model collections">
+    <nav aria-label="OpenSCAD source directories">
       <ul>
-        {modelCatalog.groups.map((group) => (
+        {modelCatalog.directories.map((directory) => (
           <li>
-            <a href={`/3d_models/openscad/${group.slug}`}>{group.title}</a>
-            <span> ({group.items.length} STL)</span>
+            {directory.path === '.' ? (
+              <>
+                <span>{directory.title}</span>
+                <ul>
+                  {rootGroups.map((group) => (
+                    <li>
+                      <a href={group.routePath}>{group.title}</a>
+                      <span> ({group.items.length} STL)</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <a href={directory.routePath}>{directory.title}</a>
+            )}
+            <span> ({directory.groupIds.length} group{directory.groupIds.length === 1 ? '' : 's'})</span>
           </li>
         ))}
       </ul>

@@ -1,0 +1,38 @@
+---
+import ModelDirectoryPage from '../../components/ModelDirectoryPage.astro';
+import ModelPage from '../../components/ModelPage.astro';
+import modelCatalog from '../../generated/model-catalog';
+
+export function getStaticPaths() {
+  const directoryPaths = modelCatalog.directories
+    .filter((directory) => directory.path !== '.')
+    .map((directory) => ({
+      params: { path: directory.routeSegments.join('/') },
+      props: { directory },
+    }));
+
+  const groupPaths = modelCatalog.groups
+    .filter((group) => group.directory !== '.')
+    .map((group) => ({
+      params: {
+        path: [...group.directorySegments, group.slug].join('/'),
+      },
+      props: { group },
+    }));
+
+  return [...directoryPaths, ...groupPaths];
+}
+
+const { directory, group } = Astro.props;
+---
+
+{directory ? (
+  <ModelDirectoryPage
+    directory={directory}
+    groups={directory.groupIds
+      .map((id) => modelCatalog.groups.find((entry) => entry.id === id))
+      .filter(Boolean)}
+  />
+) : (
+  <ModelPage title={group.title} groups={[group]} />
+)}
