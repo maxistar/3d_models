@@ -19,7 +19,7 @@
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 100;
+$fn = 50;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
@@ -361,8 +361,12 @@ module phone_solid() {
       square([100, phone_half_length * 2], center=true);
 }
 
-translate([0, 0, 8]) {
+translate([0, 0, 8 + 50]) {
   phone_case();
 }
 
 print_layout();
+
+translate([0, 0, 8 - 100]) {
+  phone_solid();
+}
