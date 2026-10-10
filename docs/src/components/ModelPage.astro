@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import STLViewerGallery from './STLViewerGallery';
+
+const { title, groups = [], canonicalPath } = Astro.props;
+const items = groups.flatMap((group) => group.items);
+const stlFiles = items.map((item) => item.assetUrl);
+---
+
+<Layout>
+  <main>
+    <p>
+      <a href="/3d_models/openscad/">OpenSCAD models</a>
+      {canonicalPath && <> · <a href={canonicalPath}>Canonical page</a></>}
+    </p>
+    <h1>{title}</h1>
+
+    {items.length > 0 ? (
+      <>
+        <STLViewerGallery client:only="react" urls={stlFiles} />
+        <h2>Download STL files</h2>
+        <ul>
+          {items.map((item) => (
+            <li>
+              <a href={item.assetUrl} download>{item.title}.stl</a>
+            </li>
+          ))}
+        </ul>
+      </>
+    ) : (
+      <p>No generated STL files are available for this collection.</p>
+    )}
+  </main>
+</Layout>

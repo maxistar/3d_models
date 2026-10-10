@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "generate:catalog": "node ../scripts/generate-site-catalog.mjs",
+    "predev": "npm run generate:catalog",
+    "prebuild": "npm run generate:catalog",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

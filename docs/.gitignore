@@ -4,6 +4,9 @@ dist/
 # generated types
 .astro/
 
+# generated model catalog
+/src/generated/
+
 # dependencies
 node_modules/
 

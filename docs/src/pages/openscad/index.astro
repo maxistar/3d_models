@@ -1,19 +1,21 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import modelCatalog from '../../generated/model-catalog';
 ---
 
 <Layout>
   <main>
     <h1>OpenSCAD models</h1>
-    <p>Collections created with OpenSCAD.</p>
+    <p>Collections discovered from eligible OpenSCAD source/STL pairs.</p>
 
     <nav aria-label="OpenSCAD model collections">
       <ul>
-        <li><a href="/3d_models/blocknote">Blocknote</a></li>
-        <li><a href="/3d_models/helpinghand">Helping Hand</a></li>
-        <li><a href="/3d_models/helpinghand_solid">Helping Hand Solid</a></li>
-        <li><a href="/3d_models/cablewinder">Cable Organizer</a></li>
-        <li><a href="/3d_models/honeycomb">Honeycomb</a></li>
+        {modelCatalog.groups.map((group) => (
+          <li>
+            <a href={`/3d_models/openscad/${group.slug}`}>{group.title}</a>
+            <span> ({group.items.length} STL)</span>
+          </li>
+        ))}
       </ul>
     </nav>
   </main>

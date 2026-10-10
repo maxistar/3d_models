@@ -1,21 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import STLViewerGallery from '../components/STLViewerGallery';
+import ModelPage from '../components/ModelPage.astro';
+import { groupsForLegacyRoute } from '../lib/modelCatalog';
 
-const stlFiles = [
-	'/3d_models/openscad/blocknote/blocknote.stl',
-	'/3d_models/openscad/blocknote/blocknote_cover.stl',
-	'/3d_models/openscad/blocknote/blocknote_cover_back.stl',
-	'/3d_models/openscad/blocknote/blocknote_liner.stl',
-	'/3d_models/openscad/blocknote/blocknote_hole_making_template.stl',
-	'/3d_models/openscad/blocknote/blocknote_ruler.stl',
-	'/3d_models/openscad/blocknote/blocknote_ruler_with_cuts.stl'
-];
+const groups = groupsForLegacyRoute('blocknote');
 
 ---
 
-<Layout>
-	<div>
-	  <STLViewerGallery client:only="react" urls={stlFiles} />
-	</div>
-</Layout>
+<ModelPage title="Blocknote" groups={groups} canonicalPath="/3d_models/openscad/blocknote" />

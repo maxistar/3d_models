@@ -1,0 +1,15 @@
+---
+import ModelPage from '../../components/ModelPage.astro';
+import modelCatalog from '../../generated/model-catalog';
+
+export function getStaticPaths() {
+  return modelCatalog.groups.map((group) => ({
+    params: { slug: group.slug },
+    props: { group },
+  }));
+}
+
+const { group } = Astro.props;
+---
+
+<ModelPage title={group.title} groups={[group]} />

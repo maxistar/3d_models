@@ -1,22 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import STLViewerGallery from '../components/STLViewerGallery';
+import ModelPage from '../components/ModelPage.astro';
+import { groupsForLegacyRoute } from '../lib/modelCatalog';
 
-const stlFiles = [
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_bottom_left.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_bottom_right.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_bottom.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_tightener.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_top_left.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_assembly_helper_top_right.stl',
-	'/3d_models/openscad/helpinghand_solid/helpinghand_solid_connector_element.stl',
-];
+const groups = groupsForLegacyRoute('helpinghand_solid');
 
 ---
 
-<Layout>
-	<div>
-	  <STLViewerGallery client:only="react" urls={stlFiles} />
-	</div>
-</Layout>
+<ModelPage title="Helping Hand Solid" groups={groups} canonicalPath="/3d_models/openscad/helpinghand-solid" />

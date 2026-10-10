@@ -1,22 +1,4 @@
-# site-source-navigation Specification
-
-## Purpose
-TBD - created by archiving change organize-site-by-source. Update Purpose after archive.
-## Requirements
-### Requirement: Site exposes source-family sections
-The documentation site SHALL expose separate top-level navigation entries for OpenSCAD and build123d models.
-
-#### Scenario: Visitor opens the home page
-- **WHEN** a visitor opens the documentation site home page
-- **THEN** the page provides a link to the OpenSCAD section and a link to the build123d section
-
-#### Scenario: Visitor opens the OpenSCAD section
-- **WHEN** a visitor navigates to `/3d_models/openscad/`
-- **THEN** the site displays an index of the available OpenSCAD model collections
-
-#### Scenario: Visitor opens the build123d section
-- **WHEN** a visitor navigates to `/3d_models/build123d/`
-- **THEN** the site displays an index of the available build123d models or model pages
+## MODIFIED Requirements
 
 ### Requirement: Section indexes link to existing model pages
 The OpenSCAD and build123d section indexes SHALL link to the model pages selected for their respective source family. OpenSCAD membership and links SHALL be derived from the source-driven catalog; build123d membership MAY remain explicitly curated until build123d discovery is introduced.
@@ -54,4 +36,3 @@ The OpenSCAD section SHALL expose eligible source/STL groups from the catalog an
 #### Scenario: Repository contains a blacklisted source
 - **WHEN** a source is listed in `.modelignore`
 - **THEN** it is absent from the OpenSCAD section index and generated model pages
-
