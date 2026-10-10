@@ -8,31 +8,81 @@ set -euo pipefail
 shopt -s nullglob
 
 FORCE=false
+RECURSIVE=false
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+show_help() {
   cat <<'USAGE'
 Usage: process.sh [OPTIONS] [TARGET_DIR]
 
 Process every eligible .scad file in TARGET_DIR (defaults to current
-directory), generating matching .stl and .png files with OpenSCAD. Files whose
-basename starts with '_' and paths listed in .modelignore are skipped.
+directory), generating matching .stl and .png files with OpenSCAD. By default,
+only files directly inside TARGET_DIR are processed. Use --recursive to include
+all nested directories. Files whose basename starts with '_' and paths listed
+in .modelignore are skipped.
 
 Outputs are skipped if the .scad file has not been modified since the last run.
 Use --force to rebuild everything regardless.
 
 Options:
   -f, --force   Force rebuild of all files even if up to date
+  -r, --recursive
+                Process .scad files in TARGET_DIR and all nested directories
   -h, --help    Show this help message
 USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  show_help
   exit 0
 fi
 
-if [[ "${1:-}" == "-f" || "${1:-}" == "--force" ]]; then
-  FORCE=true
+target_dir="."
+target_dir_set=false
+while (( $# > 0 )); do
+  case "$1" in
+    -f|--force)
+      FORCE=true
+      ;;
+    -r|--recursive)
+      RECURSIVE=true
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    --)
+      shift
+      if (( $# > 0 )); then
+        if [[ "$target_dir_set" == true ]]; then
+          echo "❌ Only one target directory may be specified" >&2
+          exit 1
+        fi
+        target_dir="$1"
+        target_dir_set=true
+        shift
+      fi
+      if (( $# > 0 )); then
+        echo "❌ Only one target directory may be specified" >&2
+        exit 1
+      fi
+      break
+      ;;
+    -* )
+      echo "❌ Unknown option: $1" >&2
+      echo "Use --help for usage." >&2
+      exit 1
+      ;;
+    *)
+      if [[ "$target_dir_set" == true ]]; then
+        echo "❌ Only one target directory may be specified" >&2
+        exit 1
+      fi
+      target_dir="$1"
+      target_dir_set=true
+      ;;
+  esac
   shift
-fi
-
-target_dir="${1:-.}"
+done
 
 if [[ ! -d "$target_dir" ]]; then
   echo "❌ Target directory does not exist: $target_dir" >&2
@@ -68,7 +118,14 @@ is_model_ignored() {
   return 1
 }
 
-scad_files=("$target_dir"/*.scad)
+scad_files=()
+if [[ "$RECURSIVE" == true ]]; then
+  while IFS= read -r -d '' scad_path; do
+    scad_files+=("$scad_path")
+  done < <(find "$target_dir" -type f -name '*.scad' -print0)
+else
+  scad_files=("$target_dir"/*.scad)
+fi
 
 if (( ${#scad_files[@]} == 0 )); then
   echo "No .scad files found in $target_dir."
@@ -101,7 +158,11 @@ if (( ${#eligible_files[@]} == 0 )); then
   exit 0
 fi
 
-echo "🛠  Processing ${#eligible_files[@]} eligible OpenSCAD file(s) in $target_dir"
+scope="in $target_dir"
+if [[ "$RECURSIVE" == true ]]; then
+  scope="under $target_dir (recursive)"
+fi
+echo "🛠  Processing ${#eligible_files[@]} eligible OpenSCAD file(s) $scope"
 if [[ "$FORCE" == true ]]; then
   echo "   (force mode: rebuilding all)"
 fi

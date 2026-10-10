@@ -19,7 +19,7 @@ You can see models visualisations [here](https://projects.maxistar.me/3d_models/
 
 ## Regenerating STL/PNG outputs
 
-The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds eligible files whose `.scad` source has changed since the last run. Generated `.stl` files are exported in ASCII STL format so mesh changes remain visible in Git diffs.
+The `scripts/process.sh` script automates batch export for a given folder using OpenSCAD in headless mode. It only rebuilds eligible files whose `.scad` source has changed since the last run. Generated `.stl` files are exported in ASCII STL format so mesh changes remain visible in Git diffs. Use `--recursive` to process nested model folders in one run.
 
 Model files with a shared meaningful prefix form a default project group. The `honeycomb` directory is an explicit exception and remains one project even though its component files use different prefixes. Files whose basename starts with `_` are internal libraries and are not exported automatically. Additional incompatible sources can be listed by repository-relative path in `.modelignore`; those files are skipped by batch generation and future model discovery. `RuggedBoxV1.scad` is excluded this way because it requires a different OpenSCAD version.
 
@@ -36,6 +36,9 @@ Model files with a shared meaningful prefix form a default project group. The `h
 for dir in openscad/*/; do
   ./scripts/process.sh "$dir"
 done
+
+# Rebuild all eligible OpenSCAD files recursively
+./scripts/process.sh --recursive openscad/
 ```
 
 At the end of each run the script prints a summary:
