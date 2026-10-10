@@ -6,3 +6,9 @@
 # intentionally not part of the generated model catalog.
 openscad/helpinghand/RuggedBoxV1.scad
 openscad/rugged_box/RuggedBoxV1.scad
+
+# Project scaffolding, oversized assemblies, and sources awaiting
+# normalization are not model-page candidates.
+build123d/main.py
+openscad/honeycomb/wall.scad
+openscad/spiningtop/spinning_top.scad

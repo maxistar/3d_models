@@ -71,7 +71,6 @@ At the end of each run the script prints a summary:
 
 ### Kitchen, hobbies, and props
 - **`cake_mold.scad`** – Thin-walled hemispherical mold (80 mm radius) with a flat base for casting or baking dome-shaped desserts.【F:openscad/cake_mold.scad†L1-L16】
-- **`spinning_top.scad`** – Gyroscopic top with a faceted core and three magnet pockets for tuning spin stability.【F:openscad/spinning_top.scad†L1-L52】
 - **`lightsaber.scad`** – Removes a cylindrical channel from the included emitter shroud STL, tailoring the prop to house electronics or a blade stub.【F:openscad/lightsaber.scad†L1-L12】
 
 ### Electronics and optics
