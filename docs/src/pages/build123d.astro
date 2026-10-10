@@ -11,7 +11,15 @@ const stlFiles = [
 ---
 
 <Layout>
-  <div>
-    <STLViewerGallery client:only="react" urls={stlFiles} />
-  </div>
+	<main>
+	  <h1>build123d models</h1>
+	  <nav aria-label="build123d model pages">
+	    <ul>
+	      <li><a href="/3d_models/mug">Mug</a></li>
+	      <li><a href="/3d_models/gridfinity_1x1">Gridfinity 1x1</a></li>
+	    </ul>
+	  </nav>
+
+	  <STLViewerGallery client:only="react" urls={stlFiles} />
+	</main>
 </Layout>
