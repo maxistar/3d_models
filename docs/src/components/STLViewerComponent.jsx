@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { StlViewer } from 'react-stl-viewer';
 
 const style = {
-    width: '100vw',
+    width: '100%',
     height: '500px',
     backgroundColor: '#f0f0f0',
 };
