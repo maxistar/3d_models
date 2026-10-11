@@ -1,3 +1,4 @@
 use <mi9_pro.scad>
 
-phone_solid();
+
+phone_solid($fn = 100);

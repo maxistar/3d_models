@@ -19,14 +19,14 @@
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 50;
+$fn = 30;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
-phone_half_width = 30;
-phone_half_length = 70.8;
+phone_half_width = 30 - 0.5;
+phone_half_length = 70.8 - 0.5;
 corner_radius = 9;
-outline_z_scale = 0.8;
+outline_z_scale = 0.9;
 phone_thickness = 8.8;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ latch_positions = [
   [-20, -10, 0],
 ];
 
-cover_layout_x_offset = phone_half_width * 2 + 35;
+cover_layout_x_offset = phone_half_width * 2 + 37;
 
 strip_thickness = 0.5;
 
@@ -110,10 +110,10 @@ module speaker_cut() {
   rotate([90, 0, 0])
     linear_extrude(height=10)
       hull() {
-        translate([-6, 0])
+        translate([-5, 0])
           circle(r=1.5);
 
-        translate([6, 0])
+        translate([5, 0])
           circle(r=1.5);
       }
 }
@@ -140,20 +140,20 @@ module phone_case() {
 
     // Open front of the case.
     linear_extrude(10)
-      phone_opening_profile(1.9);
+      phone_opening_profile(2.5);
 
     // Remove the upper part of the body to form the case rim.
-    translate([0, 0, 5 + 4.8])
+    translate([0, 0, 5 + 5])
       cube([200, 200, 10], center=true);
 
     // Top edge: speaker, USB-C, speaker.
-    translate([15, 83, 0])
+    translate([16, 83, 0])
       speaker_cut();
 
     translate([0, 83, 0])
       usb_cut();
 
-    translate([-15, 83, 0])
+    translate([-16, 83, 0])
       speaker_cut();
 
     // Bottom edge: audio jack and microphones.
@@ -200,6 +200,30 @@ module phone_case() {
       rotate([90, 0, 0])
         cylinder(h=43, r=7);
   }
+
+  translate([-38, -17.6, 0])
+    button_plug(4.5);
+
+  translate([-38, -38, 0])
+    button_plug(9);
+}
+
+module button_plug(length = 10) {
+
+  difference() {
+    hull() {
+      translate([0, length, 0])
+        sphere(2.4);
+      translate([0, -length, 0])
+        sphere(2.4);
+    }
+
+    translate([5.5, 0, 0])
+      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+
+    translate([-6.5, 0, 0])
+      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+  }
 }
 
 // ── Magnetic latches ─────────────────────────────────────────────────────────
@@ -239,7 +263,7 @@ module latch_cut() {
 }
 
 module magnetic_latch() {
-  translate([-phone_half_width * 2 - 10, 0, 0]) {
+  translate([-phone_half_width * 2 - 12, 0, 0]) {
     difference() {
       cylinder(h=2.3, r=10);
       cylinder(h=10, r=magnet_radius);
@@ -264,7 +288,7 @@ module magnetic_latch() {
 
 module cover(thickness = 2) {
   linear_extrude(thickness)
-    phone_opening_profile();
+    phone_opening_profile(-1);
 }
 
 module flat_cover_with_camera_cut() {
@@ -288,7 +312,7 @@ module magnet_cover() {
       union() {
         cover(thickness=1.5);
         linear_extrude(2.5)
-          phone_opening_profile(2);
+          phone_opening_profile(2.5);
       }
 
       translate([25, 0, 0.2])
@@ -339,7 +363,8 @@ module cover_layout() {
   connector_strip();
 }
 
-module phone_solid() {
+module phone_solid($fn = 30) {
+
   // Main flat cover with camera and case clearance cuts.
   flat_cover_with_camera_cut();
 
