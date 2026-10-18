@@ -19,10 +19,9 @@
 
 Изменяем рабочий телефон. 
 
-Сверху до камеры 15.74
-до камеры сбоку 6.79. 
+
 до кнопки питания сверху 43.39. 
-длина кнопки питания 14.06. 
+
 расстояние между кнопками 7.51
 длина кнопок громкости 23.86.
 
@@ -37,12 +36,19 @@ phone_width = 73.21;
 phone_length = 154.0;
 phone_thickness = 8.5;
 
+cameras_distanse = 30;
+camera_radius = 10;
 
+// Сверху до камеры 15.74
+camera_top_offset = 15.74;
+// до камеры сбоку 6.79. 
+camera_side_offset = 6.79;
+
+//длина кнопки питания 14.06.
+power_button_length = 14.06;
+buttons_radius = 1;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
-
-
-
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
@@ -79,14 +85,14 @@ module outer_case_body(offset = 0, thickness_offset = 0) {
         for (y = [-phone_half_length_without_radius, phone_half_length_without_radius]) {
           translate([x, y, 0])
             cylinder(
-              h=phone_thickness - edge_radius*2 + thickness_offset,
+              h=phone_thickness - edge_radius * 2 + thickness_offset,
               r=corner_radius,
               center=true
             );
         }
       }
     }
-    sphere(r=edge_radius+offset);
+    sphere(r=edge_radius + offset);
   }
 }
 
@@ -96,13 +102,56 @@ module inner_case_volume(offset = 0) {
   outer_case_body(offset);
 
   //cube([phone_width, phone_length, phone_thickness], center=true);
-
 }
 
 module phone_body_model() {
-  inner_case_volume();
 
+  difference() {
+    inner_case_volume();
+    translate([0, -phone_half_length + 5, 0]) {
+      usb_cut();
+    }
+    translate([16, -phone_half_length + 5, 0]) {
+      speaker_cut();
+    }
 
+    translate([-10, -phone_half_length + 5, 0]) {
+      rotate([90, 0, 0]) {
+        cylinder(h=10, r=2);
+      }
+    }
+
+    translate([22, phone_half_length + 5, 0]) {
+      rotate([90, 0, 0]) {
+        cylinder(h=10, r=2);
+      }
+    }
+  }
+
+  translate([-phone_width / 2 + cameras_distanse / 2 + camera_radius + camera_side_offset, phone_half_length - camera_radius - camera_top_offset, 2]) {
+    cameraBlock();
+  }
+
+  translate([phone_width / 2 + 1 / 2, 0, 0])
+    hull() {
+      translate([0, power_button_length/2-buttons_radius, 0])
+        rotate([0, 90, 0])
+          cylinder(r=buttons_radius, h=1, center=true);
+
+      translate([0, -power_button_length/2+buttons_radius, 0])
+        rotate([0, 90, 0])
+          cylinder(r=buttons_radius, h=1, center=true);
+    }
+}
+
+module cameraBlock() {
+
+  hull() {
+    translate([-cameras_distanse / 2, 0, 0])
+      cylinder(h=phone_thickness, r=camera_radius, center=true);
+    translate([cameras_distanse / 2, 0, 0])
+      cylinder(h=phone_thickness, r=camera_radius, center=true);
+  }
 }
 
 // 2D phone opening profile used for the flat cover.
