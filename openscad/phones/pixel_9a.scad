@@ -261,11 +261,11 @@ module phone_case() {
       cameraBlock(camera_radius=camera_radius + 1);
     }
 
-    translate([phone_width / 2, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+    translate([phone_width / 2-0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
       sideButton(button_length=power_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
     }
 
-    translate([phone_width / 2, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
+    translate([phone_width / 2-0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
       sideButton(button_length=volume_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
     }
 
@@ -534,12 +534,16 @@ module preview() {
   }
 }
 
-//difference() {
+  phone_case();
+
+/*
+difference() {
   //preview();
   phone_case();
-//  translate([0, 150, 0])
-//    cube([300, 300, 300], center=true);
-//}
+  translate([0, 150, 0])
+    cube([300, 300, 300], center=true);
+}
+*/
 
 /*
 cover_layout();
