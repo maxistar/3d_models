@@ -26,7 +26,7 @@ phone dimensions:
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 50;
+$fn = 100;
 
 // masured values
 phone_width = 73.21;
@@ -50,11 +50,11 @@ power_button_length = 14.06;
 //длина кнопок громкости 23.86.
 volume_button_length = 23.86;
 
-//до кнопки питания сверху 43.39. 
-power_button_top_offset = 43.39;
+//до кнопки питания сверху 43.39. (-0.39) 
+power_button_top_offset = 43; 
 
-//расстояние между кнопками 7.51
-volume_button_top_offset = 7.51 + power_button_top_offset + power_button_length;
+//расстояние между кнопками 7.51 (-0.51)
+volume_button_top_offset = 7 + power_button_top_offset + power_button_length;
 
 buttons_radius = 1;
 
@@ -62,7 +62,7 @@ buttons_radius = 1;
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
-corner_radius = 9;
+corner_radius = 10;
 edge_radius = 1;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
