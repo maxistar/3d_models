@@ -72,6 +72,7 @@ magnet_radius = 4 / 2 + 0.05; // 4 mm magnet diameter plus clearance
 // ── Feature positions ────────────────────────────────────────────────────────
 
 camera_position = [-23.2, -66, 0];
+speaker_cut_offset = 18;
 
 latch_positions = [
   [-20, 50, 0],
@@ -118,7 +119,7 @@ module sockets() {
     translate([0, -phone_half_length + 5, 0]) {
       usb_cut();
     }
-    translate([16, -phone_half_length + 5, 0]) {
+    translate([speaker_cut_offset, -phone_half_length + 5, 0]) {
       speaker_cut();
     }
 
@@ -212,10 +213,10 @@ module speaker_cut() {
   rotate([90, 0, 0])
     linear_extrude(height=10)
       hull() {
-        translate([-5, 0])
+        translate([-6, 0])
           circle(r=1.5);
 
-        translate([5, 0])
+        translate([6, 0])
           circle(r=1.5);
       }
 }
@@ -258,11 +259,11 @@ module phone_case() {
   }
 
   translate([phone_width / 2 + 1 / 2, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
-    sideButton(button_length=power_button_length, button_height = 2.8, buttons_radius = buttons_radius + 1);
+    sideButton(button_length=power_button_length, button_height = 2.6, buttons_radius = buttons_radius + 1);
   }
 
   translate([phone_width / 2 + 1 / 2, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-    sideButton(button_length=volume_button_length, button_height = 2.8, buttons_radius = buttons_radius + 1);
+    sideButton(button_length=volume_button_length, button_height = 2.6, buttons_radius = buttons_radius + 1);
   }
 
     /*
