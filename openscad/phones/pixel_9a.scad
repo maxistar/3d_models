@@ -10,13 +10,21 @@
  * `phone_half_*` are half-dimensions used as corner coordinates.
 
 
-   - make simple version
-   - make strip thicker
-   - make usb
-   - make round hollow for buttons
-   - make rounding
+- make simple version
+- make strip thicker
+- make usb
+- make round hollow for buttons
+- make rounding
 
-phone dimensions:
+
+- [x] make usb 1mm (0.5) highter
+- [x] move it a side a litle a make wider
+- [x] move camere 1mm highter
+- [x] move buttons 2, 3mm higher
+- [x] make rounding 0.5 - 1mm bigger
+- [x] remove interne rounding
+- make buttons more bigger
+
 
 
 
@@ -26,7 +34,7 @@ phone dimensions:
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 100;
+$fn = 20;
 
 // masured values
 phone_width = 73.21;
@@ -41,7 +49,7 @@ camera_radius = 18.34 / 2;
 
 // Сверху до камеры 15.74
 // Камера, расстояние до центра. 23.31
-camera_top_offset = 15.74;
+camera_top_offset = 15.74 - 1.5;
 // до камеры сбоку 6.79. 
 camera_side_offset = 6.79;
 
@@ -51,10 +59,10 @@ power_button_length = 14.06;
 volume_button_length = 23.86;
 
 //до кнопки питания сверху 43.39. (-0.39) 
-power_button_top_offset = 43; 
+power_button_top_offset = 43 - 2;
 
 //расстояние между кнопками 7.51 (-0.51)
-volume_button_top_offset = 7 + power_button_top_offset + power_button_length;
+volume_button_top_offset = 7 + power_button_top_offset + power_button_length - 1;
 
 buttons_radius = 1;
 
@@ -62,7 +70,7 @@ buttons_radius = 1;
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
-corner_radius = 10;
+corner_radius = 10 + 1;
 edge_radius = 1;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
@@ -118,20 +126,39 @@ module inner_case_volume(offset = 0) {
   outer_case_body(offset);
 }
 
+module inner_case_volume_no_round_bottom() {
+
+  outer_case_body();
+
+  difference() {
+
+    outer_case_body(
+      offset=0,
+      thickness_offset=0,
+      edge_radius=0,
+      corner_radius=corner_radius
+    );
+
+    translate([0, 0, phone_length])
+      cube([phone_length * 2, phone_length * 2, phone_length * 2], center=true);
+  }
+}
+
 module sockets() {
-  translate([0, -phone_half_length + 5, 0]) {
+  translate([-1.5, -phone_half_length + 5, 0.8]) {
     usb_cut();
   }
-  translate([speaker_cut_offset, -phone_half_length + 5, 0]) {
+  translate([speaker_cut_offset, -phone_half_length + 5, 0.8]) {
     speaker_cut();
   }
 
   // 8.21
+  /*
   translate([-8.21, -phone_half_length + 5, 0]) {
     rotate([90, 0, 0]) {
       cylinder(h=10, r=1.5);
     }
-  }
+  }*/
 
   //- Верхний датчик 22.30 . 
   translate([22.30, phone_half_length + 5, 0]) {
@@ -228,10 +255,10 @@ module usb_cut() {
   rotate([90, 0, 0])
     linear_extrude(height=10)
       hull() {
-        translate([-3, 0])
+        translate([-3.5, 0])
           circle(r=3);
 
-        translate([3, 0])
+        translate([3.5, 0])
           circle(r=3);
       }
 }
@@ -243,7 +270,8 @@ module phone_case() {
   difference() {
     outer_case_body(offset=1.5, thickness_offset=1, edge_radius=0);
 
-    inner_case_volume();
+    //inner_case_volume();
+    inner_case_volume_no_round_bottom();
 
     linear_extrude(10)
       phone_opening_profile(-0.5);
@@ -257,15 +285,15 @@ module phone_case() {
 
     sockets();
 
-    translate([-(-phone_width / 2 + cameras_distanse / 2 + camera_radius + camera_side_offset), phone_half_length - camera_radius - camera_top_offset, -5]) {
+    translate([-( -phone_width / 2 + cameras_distanse / 2 + camera_radius + camera_side_offset), phone_half_length - camera_radius - camera_top_offset, -5]) {
       cameraBlock(camera_radius=camera_radius + 1);
     }
 
-    translate([phone_width / 2-0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+    translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
       sideButton(button_length=power_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
     }
 
-    translate([phone_width / 2-0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
+    translate([phone_width / 2 - 0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
       sideButton(button_length=volume_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
     }
 
@@ -534,7 +562,8 @@ module preview() {
   }
 }
 
-  phone_case();
+phone_case();
+//inner_case_volume_no_round_bottom();
 
 /*
 difference() {
