@@ -131,6 +131,23 @@ module inner_case_volume(offset = 0) {
   outer_case_body(offset);
 }
 
+module inner_case_volume_no_round_bottom() {
+
+  outer_case_body();
+
+  difference() {
+
+    outer_case_body(
+      offset=0,
+      edge_radius=0,
+      corner_radius=corner_radius
+    );
+
+    translate([0, 0, phone_length])
+      cube([phone_length * 2, phone_length * 2, phone_length * 2], center=true);
+  }
+}
+
 module sockets() {
   translate([0, -phone_half_length + 5, 0]) {
     usb_cut();
@@ -170,7 +187,7 @@ module phone_body_model() {
 
   translate(
     [
-      -phone_half_width + cameras_distanse_x / 2 + camera_radius + camera_side_offset,
+      phone_half_width - cameras_distanse_x / 2 - camera_radius - camera_side_offset,
       phone_half_length - cameras_distanse_y / 2 - camera_radius - camera_top_offset,
       -2,
     ]
@@ -193,24 +210,26 @@ module sideButton(button_length = power_button_length, button_height = 1, button
 }
 
 module sideButtons(button_radius_offset = 0) {
-  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
   }
 
-  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset, 0]) {
+  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius + button_radius_offset);
   }
 
-  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset, 0]) {
+  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius + button_radius_offset);
   }
 
-    translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset, 0]) {
-    sideButton(button_length=silent_switcher_length, button_height=2.6, buttons_radius=buttons_radius + button_radius_offset);
+  translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
+    sideButton(button_length=silent_switcher_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
   }
 }
 
 module cameraBlock2x2(camera_radius = camera_radius) {
+
+  //cube([32, 34, 30], center =true);
 
   hull() {
     translate([-cameras_distanse_x / 2, cameras_distanse_y / 2, 0])
@@ -283,12 +302,13 @@ module usb_cut() {
 module phone_case() {
 
   difference() {
-    outer_case_body(offset=1.5, edge_radius=0, height_thickness_offset = -2);
+    outer_case_body(offset=1.5, edge_radius=0, height_thickness_offset=-2);
 
-    inner_case_volume();
+    //inner_case_volume();
+    inner_case_volume_no_round_bottom();
 
     linear_extrude(10)
-      phone_opening_profile(-0.9);
+      phone_opening_profile(-0.1);
 
     // Open front of the case.
 
@@ -301,7 +321,7 @@ module phone_case() {
 
     translate(
       [
-        -phone_half_width + cameras_distanse_x / 2 + camera_radius + camera_side_offset,
+        phone_half_width - cameras_distanse_x / 2 - camera_radius - camera_side_offset,
         phone_half_length - cameras_distanse_y / 2 - camera_radius - camera_top_offset,
         -2,
       ]
@@ -583,7 +603,8 @@ module preview() {
   //}
 }
 
-  phone_case();
+phone_case();
+//cameraBlock2x2();
 //preview();
 /*
 difference() {
