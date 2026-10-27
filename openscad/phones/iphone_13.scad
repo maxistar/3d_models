@@ -22,7 +22,7 @@
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 100;
+$fn = 50;
 
 // masured values
 // ширина 71.05
@@ -197,29 +197,29 @@ module phone_body_model() {
   sideButtons();
 }
 
-module sideButton(button_length = power_button_length, button_height = 1, buttons_radius = buttons_radius) {
+module sideButton(button_length = power_button_length, button_height = 1, buttons_radius = buttons_radius, button_radius_offset=0) {
   hull() {
     translate([0, button_length / 2 - buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius, h=button_height, center=true);
+        cylinder(r=buttons_radius+button_radius_offset, h=button_height, center=true);
 
     translate([0, -button_length / 2 + buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius, h=button_height, center=true);
+        cylinder(r=buttons_radius+button_radius_offset, h=button_height, center=true);
   }
 }
 
 module sideButtons(button_radius_offset = 0) {
   translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
+    sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
   }
 
   translate([-(phone_width / 2 - 0.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius + button_radius_offset);
+    sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
   }
 
   translate([-(phone_width / 2 - 0.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius + button_radius_offset);
+    sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
   }
 
   translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
@@ -332,6 +332,15 @@ module phone_case() {
     button_radius_offset = 1;
     sideButtons(button_radius_offset);
 
+
+  translate([-(phone_width / 2 + 2.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
+    sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset = 1);
+  }
+
+  translate([-(phone_width / 2 + 2.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
+    sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset = 1);
+  }
+
     /*
     // Top edge: speaker, USB-C, speaker.
     translate([16, 83, 0])
@@ -405,12 +414,12 @@ module phone_case() {
   }
   */
 
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset, 0]) {
-    sideButton(button_length=volume_up_button_length, button_height=0.5, buttons_radius=buttons_radius);
+  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset+ buttons_radius, 0]) {
+    sideButton(button_length=volume_up_button_length, button_height=1, buttons_radius=buttons_radius);
   }
 
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset, 0]) {
-    sideButton(button_length=volume_down_button_length, button_height=0.5, buttons_radius=buttons_radius);
+  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset+ buttons_radius, 0]) {
+    sideButton(button_length=volume_down_button_length, button_height=1, buttons_radius=buttons_radius);
   }
 }
 
