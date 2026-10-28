@@ -15,6 +15,9 @@
    - make usb
    - make round hollow for buttons
    - make rounding
+
+
+## TODO - refactor it!!!! sizes should be absolute!!!
  */
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -25,6 +28,7 @@ $fn = 30;
 
 phone_half_width = 30 - 0.5;
 phone_half_length = 70.8 - 0.5;
+phone_length = phone_half_length * 2;
 corner_radius = 9;
 outline_z_scale = 0.9;
 phone_thickness = 8.8;
@@ -81,8 +85,17 @@ module inner_case_volume(offset = 0) {
   }
 }
 
+module inner_case_volume_no_round_bottom(offset = 0) {
+
+  inner_case_volume(offset);
+
+  translate([0, 0, -phone_thickness / 2 + 0.7])
+    linear_extrude(phone_thickness, center=true)
+      phone_opening_profile(offset);
+}
+
 // 2D phone opening profile used for the flat cover.
-module phone_opening_profile(offset = 0) {
+module phone_opening_profile(offset = 0, corner_radius = corner_radius) {
   hull() {
     for (x = [-phone_half_width, phone_half_width]) {
       for (y = [-phone_half_length, phone_half_length]) {
@@ -106,28 +119,74 @@ module camera_cut(offset = 0, height = 20) {
   }
 }
 
-module speaker_cut() {
+// Slot along X; center_distance is the spacing between the rounded ends.
+module rounded_slot_cut(center_distance, radius, depth = 10) {
   rotate([90, 0, 0])
-    linear_extrude(height=10)
+    linear_extrude(height=depth)
       hull() {
-        translate([-5, 0])
-          circle(r=1.5);
+        translate([-center_distance / 2, 0])
+          circle(r=radius);
 
-        translate([5, 0])
-          circle(r=1.5);
+        translate([center_distance / 2, 0])
+          circle(r=radius);
       }
 }
 
-module usb_cut() {
-  rotate([90, 0, 0])
-    linear_extrude(height=10)
-      hull() {
-        translate([-3.5, 0])
-          circle(r=3);
+module speaker_cut() {
+  rounded_slot_cut(center_distance=10, radius=1.5);
+}
 
-        translate([3.5, 0])
-          circle(r=3);
-      }
+module usb_cut() {
+  rounded_slot_cut(center_distance=7, radius=3);
+}
+
+// Top edge: speaker, USB-C, speaker.
+module top_edge_cutouts() {
+  translate([16, 83, 0])
+    speaker_cut();
+
+  translate([0, 83, 0])
+    usb_cut();
+
+  translate([-16, 83, 0])
+    speaker_cut();
+}
+
+// Bottom edge: audio jack and microphones.
+module bottom_edge_cutouts() {
+  translate([22.5, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=3.3);
+
+  translate([-25, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=2);
+
+  translate([-10, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=2);
+}
+
+module button_cutouts() {
+  translate([-39, -30, 0]) {
+    // Power button.
+    hull() {
+      translate([0, 20 - 3, 0])
+        sphere(r=3);
+
+      translate([0, 8, 0])
+        sphere(r=3);
+    }
+
+    // Volume buttons.
+    hull() {
+      translate([0, 1, 0])
+        sphere(r=3);
+
+      translate([0, -20 + 3, 0])
+        sphere(r=3);
+    }
+  }
 }
 
 // ── Case ─────────────────────────────────────────────────────────────────────
@@ -136,59 +195,20 @@ module phone_case() {
   difference() {
     outer_case_body(offset=-2, thickness_offset=1, edge_radius=2);
 
-    inner_case_volume(1.5);
+    //inner_case_volume(1);
+    inner_case_volume_no_round_bottom(1);
 
     // Open front of the case.
     linear_extrude(10)
-      phone_opening_profile(2.5);
+      phone_opening_profile(2.5, corner_radius = corner_radius);
 
     // Remove the upper part of the body to form the case rim.
     translate([0, 0, 5 + 5])
       cube([200, 200, 10], center=true);
 
-    // Top edge: speaker, USB-C, speaker.
-    translate([16, 83, 0])
-      speaker_cut();
-
-    translate([0, 83, 0])
-      usb_cut();
-
-    translate([-16, 83, 0])
-      speaker_cut();
-
-    // Bottom edge: audio jack and microphones.
-    translate([22.5, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=3.3);
-
-    translate([-25, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    translate([-10, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    // Side buttons.
-    translate([-39, -30, 0]) {
-      // Power button.
-      hull() {
-        translate([0, 20 - 3, 0])
-          sphere(r=3);
-
-        translate([0, 8, 0])
-          sphere(r=3);
-      }
-
-      // Volume buttons.
-      hull() {
-        translate([0, 1, 0])
-          sphere(r=3);
-
-        translate([0, -20 + 3, 0])
-          sphere(r=3);
-      }
-    }
+    top_edge_cutouts();
+    bottom_edge_cutouts();
+    button_cutouts();
 
     camera_cut(1);
 
@@ -379,6 +399,8 @@ module phone_solid($fn = 30) {
 
   // Thin connector strip used to keep the parts together while printing.
   connector_strip();
+
+  //inner_case_volume_no_round_bottom();
 }
 
 translate([0, 0, 8 + 50]) {
