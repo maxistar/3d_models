@@ -6,8 +6,9 @@
  *   Y — phone length, bottom/top
  *   Z — case thickness
  *
- * The phone body is centered around the X/Y origin. Values named
- * `phone_half_*` are half-dimensions used as corner coordinates.
+ * The phone body is centered around the X/Y origin. `phone_width` and
+ * `phone_length` are the full base profile dimensions, including corner radii,
+ * before clearance offsets and outer case rounding are applied.
 
 
    - make simple version
@@ -15,9 +16,6 @@
    - make usb
    - make round hollow for buttons
    - make rounding
-
-
-## TODO - refactor it!!!! sizes should be absolute!!!
  */
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -26,12 +24,15 @@ $fn = 30;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
-phone_half_width = 30 - 0.5;
-phone_half_length = 70.8 - 0.5;
-phone_length = phone_half_length * 2;
+phone_width = 74.5;
+phone_length = 156.6;
 corner_radius = 9;
 outline_z_scale = 0.9;
 phone_thickness = 8.8;
+
+// Coordinates of the corner centers, derived from the full profile dimensions.
+phone_corner_x = phone_width / 2 - corner_radius;
+phone_corner_y = phone_length / 2 - corner_radius;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ latch_positions = [
   [-20, -10, 0],
 ];
 
-cover_layout_x_offset = phone_half_width * 2 + 37;
+cover_layout_x_offset = phone_corner_x * 2 + 37;
 
 strip_thickness = 0.5;
 
@@ -57,8 +58,8 @@ strip_thickness = 0.5;
 module outer_case_body(offset = 0, thickness_offset = 0, edge_radius = 3) {
   minkowski() {
     hull() {
-      for (x = [-phone_half_width, phone_half_width]) {
-        for (y = [-phone_half_length, phone_half_length]) {
+      for (x = [-phone_corner_x, phone_corner_x]) {
+        for (y = [-phone_corner_y, phone_corner_y]) {
           translate([x, y, 0])
             cylinder(
               h=phone_thickness + thickness_offset,
@@ -75,8 +76,8 @@ module outer_case_body(offset = 0, thickness_offset = 0, edge_radius = 3) {
 // Inner volume subtracted from the case to create the wall thickness.
 module inner_case_volume(offset = 0) {
   hull() {
-    for (x = [-phone_half_width, phone_half_width]) {
-      for (y = [-phone_half_length, phone_half_length]) {
+    for (x = [-phone_corner_x, phone_corner_x]) {
+      for (y = [-phone_corner_y, phone_corner_y]) {
         translate([x, y, 0])
           scale([1, 1, outline_z_scale])
             sphere(corner_radius - offset);
@@ -97,8 +98,8 @@ module inner_case_volume_no_round_bottom(offset = 0) {
 // 2D phone opening profile used for the flat cover.
 module phone_opening_profile(offset = 0, corner_radius = corner_radius) {
   hull() {
-    for (x = [-phone_half_width, phone_half_width]) {
-      for (y = [-phone_half_length, phone_half_length]) {
+    for (x = [-phone_corner_x, phone_corner_x]) {
+      for (y = [-phone_corner_y, phone_corner_y]) {
         translate([x, y])
           circle(corner_radius - offset);
       }
@@ -212,9 +213,11 @@ module phone_case() {
 
     camera_cut(1);
 
+    /*
     for (position = latch_positions)
       translate(position)
         latch_cut();
+        */
 
     translate([-45.1, -8.5, 0])
       rotate([90, 0, 0])
@@ -283,7 +286,7 @@ module latch_cut() {
 }
 
 module magnetic_latch() {
-  translate([-phone_half_width * 2 - 12, 0, 0]) {
+  translate([-phone_corner_x * 2 - 12, 0, 0]) {
     difference() {
       cylinder(h=2.3, r=10);
       cylinder(h=10, r=magnet_radius);
@@ -296,10 +299,10 @@ module magnetic_latch() {
   }
 
   hull() {
-    translate([-phone_half_width, 0, 0])
+    translate([-phone_corner_x, 0, 0])
       cylinder(h=strip_thickness, r=10);
 
-    translate([-phone_half_width * 2 - 10, 0, 0])
+    translate([-phone_corner_x * 2 - 10, 0, 0])
       cylinder(h=strip_thickness, r=10);
   }
 }
@@ -348,9 +351,10 @@ module magnet_cover() {
 }
 
 module connector_strip() {
+  // Span between the corner centers keeps the strip clear of the rounded ends.
   translate([55, 0])
     linear_extrude(strip_thickness)
-      square([100, phone_half_length * 2], center=true);
+      square([100, phone_corner_y * 2], center=true);
 }
 
 // ── Print layout ─────────────────────────────────────────────────────────────
