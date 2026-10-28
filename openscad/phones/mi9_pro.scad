@@ -16,6 +16,8 @@
    - make usb
    - make round hollow for buttons
    - make rounding
+
+   - verify phone size - now it is too small!!! 
  */
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -41,6 +43,23 @@ magnet_radius = 4 / 2 + 0.05; // 4 mm magnet diameter plus clearance
 // ── Feature positions ────────────────────────────────────────────────────────
 
 camera_position = [-23.2, -66, 0];
+
+// Side buttons: Y is the center of each button; length includes rounded ends.
+button_cutout_x = -38;
+button_plug_x = -37.9;
+power_button_y = -17.5;
+volume_button_y = -38;
+power_button_length = 15;
+volume_button_length = 24;
+button_cutout_radius = 3;
+button_plug_radius = 2.4;
+power_button_plug_y_offset = -0.1;
+
+// Flat faces of the button plugs, relative to their center on X.
+button_plug_right_trim_x = 5.8;
+button_plug_left_trim_x = -6.3;
+button_plug_trim_width = 10;
+button_plug_trim_height = 10;
 
 latch_positions = [
   [-20, 50, 0],
@@ -168,31 +187,45 @@ module bottom_edge_cutouts() {
       cylinder(h=30, r=2);
 }
 
+module button_inner_cutouts() {
+      button_inner_cutout(power_button_y, power_button_length);
+      button_inner_cutout(volume_button_y, volume_button_length);
+}
+
 module button_cutouts() {
-  translate([-39, -30, 0]) {
-    // Power button.
-    hull() {
-      translate([0, 20 - 3, 0])
-        sphere(r=3);
 
-      translate([0, 8, 0])
-        sphere(r=3);
+  difference() {
+    union() {
+      button_cutout(power_button_y, power_button_length);
+      button_cutout(volume_button_y, volume_button_length);
     }
-
-    // Volume buttons.
-    hull() {
-      translate([0, 1, 0])
-        sphere(r=3);
-
-      translate([0, -20 + 3, 0])
-        sphere(r=3);
-    }
+    cube([phone_width - 1, phone_length, phone_thickness], center=true);
   }
+}
+
+module button_cutout(center_y, button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
+
+  translate([button_cutout_x, center_y, 0])
+    hull()for (y = [-end_offset, end_offset])
+      translate([0, y, 0])
+        sphere(r=button_cutout_radius);
+}
+
+module button_inner_cutout(center_y, button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
+
+  translate([button_cutout_x+1.3, center_y, 0])
+    hull()for (y = [-end_offset, end_offset])
+      translate([0, y, 0])
+    rotate([0, 90, 0])
+      cylinder(h=10, r=3);
 }
 
 // ── Case ─────────────────────────────────────────────────────────────────────
 
 module phone_case() {
+
   difference() {
     outer_case_body(offset=-2, thickness_offset=1, edge_radius=2);
 
@@ -201,7 +234,7 @@ module phone_case() {
 
     // Open front of the case.
     linear_extrude(10)
-      phone_opening_profile(2.5, corner_radius = corner_radius);
+      phone_opening_profile(2.5, corner_radius=corner_radius);
 
     // Remove the upper part of the body to form the case rim.
     translate([0, 0, 5 + 5])
@@ -209,7 +242,8 @@ module phone_case() {
 
     top_edge_cutouts();
     bottom_edge_cutouts();
-    button_cutouts();
+    //button_cutouts();
+    button_inner_cutouts();
 
     camera_cut(1);
 
@@ -224,28 +258,32 @@ module phone_case() {
         cylinder(h=43, r=7);
   }
 
-  translate([-38, -17.6, 0])
-    button_plug(4.5);
+  //button_cutouts();
+  //button_inner_cutouts();
 
-  translate([-38, -38, 0])
-    button_plug(9);
+  translate([button_plug_x, power_button_y + power_button_plug_y_offset, 0])
+    button_plug(power_button_length);
+
+  translate([button_plug_x, volume_button_y, 0])
+    button_plug(volume_button_length);
 }
 
-module button_plug(length = 10) {
+module button_plug(button_length = power_button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
 
   difference() {
     hull() {
-      translate([0, length, 0])
-        sphere(2.4);
-      translate([0, -length, 0])
-        sphere(2.4);
+      translate([0, end_offset, 0])
+        sphere(button_plug_radius);
+      translate([0, -end_offset, 0])
+        sphere(button_plug_radius);
     }
 
-    translate([5.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+    translate([button_plug_right_trim_x, 0, 0])
+      cube([button_plug_trim_width, end_offset * 2 + button_plug_radius * 2, button_plug_trim_height], center=true);
 
-    translate([-6.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+    translate([button_plug_left_trim_x, 0, 0])
+      cube([button_plug_trim_width, end_offset * 2 + button_plug_radius * 2, button_plug_trim_height], center=true);
   }
 }
 
