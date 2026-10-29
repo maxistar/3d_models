@@ -34,7 +34,7 @@
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 20;
+$fn = 100;
 
 // masured values
 phone_width = 73.21;
@@ -65,6 +65,11 @@ power_button_top_offset = 43 - 2;
 volume_button_top_offset = 7 + power_button_top_offset + power_button_length - 1;
 
 buttons_radius = 1;
+
+// External button caps: rounded profile and X distances from the outer wall.
+case_button_radius = buttons_radius + 0.5;
+case_button_protrusion = 1.25;
+case_button_wall_overlap = 0.25;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
@@ -288,17 +293,17 @@ module case_button_cutouts() {
 
 module case_buttons() {
   translate([phone_width / 2 + 1.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
-    sideButton(button_length=power_button_length, button_depth_x=0.5, buttons_radius=buttons_radius);
+    button_plug(button_length=power_button_length);
   }
 
   translate([phone_width / 2 + 1.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-    sideButton(button_length=volume_button_length, button_depth_x=0.5, buttons_radius=buttons_radius);
+    button_plug(button_length=volume_button_length);
   }
 }
 
 module phone_case() {
   difference() {
-    outer_case_body(expansion=1.5, extra_height=1, edge_radius=0);
+    outer_case_body(expansion=1.5, extra_height=0.5, edge_radius=0);
     inner_case_volume_no_round_bottom();
     case_front_cutout();
     sockets();
@@ -309,21 +314,26 @@ module phone_case() {
   case_buttons();
 }
 
-module button_plug(length = 10) {
+// Y length includes the rounded ends. Local X=0 is the outer wall:
+// retain a small overlap inside the wall and a rounded cap outside it.
+module button_plug(
+  button_length = power_button_length,
+  button_radius = case_button_radius,
+  protrusion = case_button_protrusion,
+  wall_overlap = case_button_wall_overlap
+) {
+  end_offset = button_length / 2 - button_radius;
 
-  difference() {
+  intersection() {
     hull() {
-      translate([0, length, 0])
-        sphere(2.4);
-      translate([0, -length, 0])
-        sphere(2.4);
+      for (y = [-end_offset, end_offset])
+        translate([0, y, 0])
+          sphere(r=button_radius);
     }
 
-    translate([5.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
-
-    translate([-6.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+    // Trim both sides of the spherical hull to X=[-wall_overlap, protrusion].
+    translate([(protrusion - wall_overlap) / 2, 0, 0])
+      cube([protrusion + wall_overlap, button_length, button_radius * 2], center=true);
   }
 }
 
