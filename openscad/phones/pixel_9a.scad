@@ -211,16 +211,17 @@ module cameraBlock(camera_radius = camera_radius) {
 
 // 2D phone opening profile used for the flat cover.
 // Positive expansion grows the outline in X/Y; negative expansion shrinks it.
-module phone_opening_profile(expansion = 0) {
+// extra_corner_radius increases rounding while preserving the outline dimensions.
+module phone_opening_profile(expansion = 0, extra_corner_radius = 0) {
 
-  phone_half_width_without_radius = phone_half_width - corner_radius - edge_radius;
-  phone_half_length_without_radius = phone_half_length - corner_radius - edge_radius;
+  phone_half_width_without_radius = phone_half_width - corner_radius - edge_radius - extra_corner_radius;
+  phone_half_length_without_radius = phone_half_length - corner_radius - edge_radius - extra_corner_radius;
 
   hull() {
     for (x = [-phone_half_width_without_radius, phone_half_width_without_radius]) {
       for (y = [-phone_half_length_without_radius, phone_half_length_without_radius]) {
         translate([x, y])
-          circle(r=corner_radius + expansion);
+          circle(r=corner_radius + expansion + extra_corner_radius);
       }
     }
   }
@@ -267,7 +268,7 @@ module usb_cut() {
 
 module case_front_cutout() {
   linear_extrude(10)
-    phone_opening_profile(expansion=0.5);
+    phone_opening_profile(expansion=0.5, extra_corner_radius=1);
 
   // Trim above the case rim. At the current dimensions the cube is above
   // the outer body; retain the limit if the body height is increased.
