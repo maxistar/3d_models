@@ -94,10 +94,11 @@ strip_thickness = 0.5;
 
 // ── Profiles and main volumes ────────────────────────────────────────────────
 
-// Rounded external volume used to form the newer case shape.
+// Positive expansion grows the body in X/Y/Z; extra_height adds to the total
+// Z height independently. Both adjustments keep the body centered.
 module outer_case_body(
-  offset = 0,
-  thickness_offset = 0,
+  expansion = 0,
+  extra_height = 0,
   edge_radius = edge_radius,
   corner_radius = corner_radius
 ) {
@@ -109,38 +110,30 @@ module outer_case_body(
         for (y = [-phone_half_length_without_radius, phone_half_length_without_radius]) {
           translate([x, y, 0])
             cylinder(
-              h=phone_thickness - edge_radius * 2 + thickness_offset,
+              h=phone_thickness - edge_radius * 2 + extra_height,
               r=corner_radius,
               center=true
             );
         }
       }
     }
-    sphere(r=edge_radius + offset);
+    sphere(r=edge_radius + expansion);
   }
 }
 
-// Inner volume subtracted from the case to create the wall thickness.
-module inner_case_volume(offset = 0) {
-
-  outer_case_body(offset);
-}
-
+// Preserve the rounded upper half, but remove the edge rounding on the
+// lower half (Z <= 0) so the case cavity has a flat bottom.
 module inner_case_volume_no_round_bottom() {
+  union() {
+    outer_case_body();
 
-  outer_case_body();
+    difference() {
+      outer_case_body(edge_radius=0);
 
-  difference() {
-
-    outer_case_body(
-      offset=0,
-      thickness_offset=0,
-      edge_radius=0,
-      corner_radius=corner_radius
-    );
-
-    translate([0, 0, phone_length])
-      cube([phone_length * 2, phone_length * 2, phone_length * 2], center=true);
+      // Remove the upper half of the body without edge rounding.
+      translate([0, 0, phone_length])
+        cube([phone_length * 2, phone_length * 2, phone_length * 2], center=true);
+    }
   }
 }
 
@@ -171,7 +164,7 @@ module sockets() {
 module phone_body_model() {
 
   difference() {
-    inner_case_volume();
+    outer_case_body();
     sockets();
   }
 
@@ -188,15 +181,16 @@ module phone_body_model() {
   }
 }
 
-module sideButton(button_length = power_button_length, button_height = 1, buttons_radius = buttons_radius) {
+// Length runs along Y; depth runs along X, through the side wall.
+module sideButton(button_length = power_button_length, button_depth_x = 1, buttons_radius = buttons_radius) {
   hull() {
     translate([0, button_length / 2 - buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius, h=button_height, center=true);
+        cylinder(r=buttons_radius, h=button_depth_x, center=true);
 
     translate([0, -button_length / 2 + buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius, h=button_height, center=true);
+        cylinder(r=buttons_radius, h=button_depth_x, center=true);
   }
 }
 
@@ -211,7 +205,8 @@ module cameraBlock(camera_radius = camera_radius) {
 }
 
 // 2D phone opening profile used for the flat cover.
-module phone_opening_profile(offset = 0) {
+// Positive expansion grows the outline in X/Y; negative expansion shrinks it.
+module phone_opening_profile(expansion = 0) {
 
   phone_half_width_without_radius = phone_half_width - corner_radius - edge_radius;
   phone_half_length_without_radius = phone_half_length - corner_radius - edge_radius;
@@ -220,7 +215,7 @@ module phone_opening_profile(offset = 0) {
     for (x = [-phone_half_width_without_radius, phone_half_width_without_radius]) {
       for (y = [-phone_half_length_without_radius, phone_half_length_without_radius]) {
         translate([x, y])
-          circle(corner_radius - offset);
+          circle(r=corner_radius + expansion);
       }
     }
   }
@@ -228,13 +223,13 @@ module phone_opening_profile(offset = 0) {
 
 // ── Reusable cutouts ─────────────────────────────────────────────────────────
 
-module camera_cut(offset = 0, height = 20) {
+module camera_cut(expansion = 0, height = 20) {
   translate(camera_position) {
     hull() {
-      cylinder(h=height, r=6 + offset, center=true);
+      cylinder(h=height, r=6 + expansion, center=true);
 
       translate([0, 28, 0])
-        cylinder(h=height, r=6 + offset, center=true);
+        cylinder(h=height, r=6 + expansion, center=true);
     }
   }
 }
@@ -265,112 +260,53 @@ module usb_cut() {
 
 // ── Case ─────────────────────────────────────────────────────────────────────
 
-module phone_case() {
+module case_front_cutout() {
+  linear_extrude(10)
+    phone_opening_profile(expansion=0.5);
 
-  difference() {
-    outer_case_body(offset=1.5, thickness_offset=1, edge_radius=0);
+  // Trim above the case rim. At the current dimensions the cube is above
+  // the outer body; retain the limit if the body height is increased.
+  translate([0, 0, 11.5])
+    cube([200, 200, 10], center=true);
+}
 
-    //inner_case_volume();
-    inner_case_volume_no_round_bottom();
+module case_camera_cutout() {
+  translate([-( -phone_width / 2 + cameras_distanse / 2 + camera_radius + camera_side_offset), phone_half_length - camera_radius - camera_top_offset, -5]) {
+    cameraBlock(camera_radius=camera_radius + 1);
+  }
+}
 
-    linear_extrude(10)
-      phone_opening_profile(-0.5);
-
-    // Open front of the case.
-
-    // Remove the upper part of the body to form the case rim.
-    translate([0, 0, 11.5]) {
-      cube([200, 200, 10], center=true);
-    }
-
-    sockets();
-
-    translate([-( -phone_width / 2 + cameras_distanse / 2 + camera_radius + camera_side_offset), phone_half_length - camera_radius - camera_top_offset, -5]) {
-      cameraBlock(camera_radius=camera_radius + 1);
-    }
-
-    translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
-      sideButton(button_length=power_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
-    }
-
-    translate([phone_width / 2 - 0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-      sideButton(button_length=volume_button_length, button_height=2.6, buttons_radius=buttons_radius + 1);
-    }
-
-    /*
-    // Top edge: speaker, USB-C, speaker.
-    translate([16, 83, 0])
-      speaker_cut();
-
-    translate([0, 83, 0])
-      usb_cut();
-
-    translate([-16, 83, 0])
-      speaker_cut();
-
-    // Bottom edge: audio jack and microphones.
-    translate([22.5, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=3.3);
-
-    translate([-25, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    translate([-10, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    // Side buttons.
-    translate([-39, -30, 0]) {
-      // Power button.
-      hull() {
-        translate([0, 20 - 3, 0])
-          sphere(r=3);
-
-        translate([0, 8, 0])
-          sphere(r=3);
-      }
-
-      // Volume buttons.
-      hull() {
-        translate([0, 1, 0])
-          sphere(r=3);
-
-        translate([0, -20 + 3, 0])
-          sphere(r=3);
-      }
-      
-    }
-    
-
-    camera_cut(1);
-
-    for (position = latch_positions)
-      translate(position)
-        latch_cut();
-
-    translate([-45.1, -8.5, 0])
-      rotate([90, 0, 0])
-        cylinder(h=43, r=7);
-        */
+module case_button_cutouts() {
+  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+    sideButton(button_length=power_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1);
   }
 
-  /*
-  translate([-38, -17.6, 0])
-    button_plug(4.5);
+  translate([phone_width / 2 - 0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
+    sideButton(button_length=volume_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1);
+  }
+}
 
-  translate([-38, -38, 0])
-    button_plug(9);
-    */
-
+module case_buttons() {
   translate([phone_width / 2 + 1.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
-    sideButton(button_length=power_button_length, button_height=0.5, buttons_radius=buttons_radius);
+    sideButton(button_length=power_button_length, button_depth_x=0.5, buttons_radius=buttons_radius);
   }
 
   translate([phone_width / 2 + 1.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-    sideButton(button_length=volume_button_length, button_height=0.5, buttons_radius=buttons_radius);
+    sideButton(button_length=volume_button_length, button_depth_x=0.5, buttons_radius=buttons_radius);
   }
+}
+
+module phone_case() {
+  difference() {
+    outer_case_body(expansion=1.5, extra_height=1, edge_radius=0);
+    inner_case_volume_no_round_bottom();
+    case_front_cutout();
+    sockets();
+    case_camera_cutout();
+    case_button_cutouts();
+  }
+
+  case_buttons();
 }
 
 module button_plug(length = 10) {
@@ -453,7 +389,7 @@ module magnetic_latch() {
 
 module cover(thickness = 2) {
   linear_extrude(thickness)
-    phone_opening_profile(-1);
+    phone_opening_profile(expansion=1);
 }
 
 module flat_cover_with_camera_cut() {
@@ -466,7 +402,7 @@ module flat_cover_with_camera_cut() {
 module camera_rim() {
   difference() {
     translate([0, 0, 2 / 2])
-      camera_cut(height=1.5, offset=1 - 0.1);
+      camera_cut(height=1.5, expansion=1 - 0.1);
     camera_cut(height=20);
   }
 }
@@ -477,7 +413,7 @@ module magnet_cover() {
       union() {
         cover(thickness=1.5);
         linear_extrude(2.5)
-          phone_opening_profile(2.5);
+          phone_opening_profile(expansion=-2.5);
       }
 
       translate([25, 0, 0.2])
@@ -509,7 +445,7 @@ module cover_layout() {
       cube([2, 500, 20], center=true);
 
     translate([0, 0, 8])
-      outer_case_body(offset=-2, thickness_offset=1, edge_radius=2);
+      outer_case_body(expansion=-2, extra_height=1, edge_radius=2);
   }
 
   camera_rim();
