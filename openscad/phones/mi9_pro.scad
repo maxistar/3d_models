@@ -222,12 +222,20 @@ module button_inner_cutout(center_y, button_length) {
       cylinder(h=10, r=3);
 }
 
+module phone_model() {
+
+  
+  difference() {
+    inner_case_volume();
+  }
+}
+
 // ── Case ─────────────────────────────────────────────────────────────────────
 
 module phone_case() {
 
   difference() {
-    outer_case_body(offset=-2, thickness_offset=1, edge_radius=2);
+    outer_case_body(offset=1, thickness_offset=1, edge_radius=2);
 
     //inner_case_volume(1);
     inner_case_volume_no_round_bottom(1);
@@ -442,11 +450,19 @@ module phone_solid($fn = 30) {
   // Thin connector strip used to keep the parts together while printing.
   connector_strip();
 
+translate([0, 0, 8]) {
+    cube([phone_width, phone_length, phone_thickness], center=true);
+}
+
   //inner_case_volume_no_round_bottom();
 }
 
 translate([0, 0, 8 + 50]) {
   phone_case();
+}
+
+translate([0, 0, 8 - 50]) {
+  phone_model();
 }
 
 cover_layout();
