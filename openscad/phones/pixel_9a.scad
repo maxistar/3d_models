@@ -62,7 +62,7 @@ volume_button_length = 23.86;
 power_button_top_offset = 43 - 2;
 
 //расстояние между кнопками 7.51 (-0.51)
-volume_button_top_offset = 7 + power_button_top_offset + power_button_length - 1;
+volume_button_top_offset = 7 + power_button_top_offset + power_button_length - 1.5;
 
 buttons_radius = 1;
 
@@ -75,7 +75,7 @@ case_button_wall_overlap = 0.25;
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
-corner_radius = 10 + 1;
+corner_radius = 10 + 1.5;
 edge_radius = 1;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
@@ -96,6 +96,8 @@ latch_positions = [
 cover_layout_x_offset = phone_half_width * 2 + 37;
 
 strip_thickness = 0.5;
+
+side_button_vertical_offset = -0.5;
 
 // ── Profiles and main volumes ────────────────────────────────────────────────
 
@@ -177,11 +179,11 @@ module phone_body_model() {
     cameraBlock();
   }
 
-  translate([phone_width / 2 + 1 / 2, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+  translate([phone_width / 2 + 1 / 2, phone_half_length - power_button_length / 2 - power_button_top_offset, side_button_vertical_offset]) {
     sideButton(button_length=power_button_length);
   }
 
-  translate([phone_width / 2 + 1 / 2, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
+  translate([phone_width / 2 + 1 / 2, phone_half_length - volume_button_length / 2 - volume_button_top_offset, side_button_vertical_offset]) {
     sideButton(button_length=volume_button_length);
   }
 }
@@ -256,10 +258,10 @@ module usb_cut() {
   rotate([90, 0, 0])
     linear_extrude(height=10)
       hull() {
-        translate([-3.5, 0])
+        translate([-5, 0])
           circle(r=3);
 
-        translate([3.5, 0])
+        translate([4, 0])
           circle(r=3);
       }
 }
@@ -283,22 +285,22 @@ module case_camera_cutout() {
 }
 
 module case_button_cutouts() {
-  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
-    sideButton(button_length=power_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1);
+  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset, side_button_vertical_offset]) {
+    sideButton(button_length=power_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1.5);
   }
 
-  translate([phone_width / 2 - 0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-    sideButton(button_length=volume_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1);
+  translate([phone_width / 2 - 0.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, side_button_vertical_offset]) {
+    sideButton(button_length=volume_button_length, button_depth_x=2.6, buttons_radius=buttons_radius + 1.5);
   }
 }
 
 module case_buttons() {
-  translate([phone_width / 2 + 1.5, phone_half_length - power_button_length / 2 - power_button_top_offset, 0]) {
+  translate([phone_width / 2 + 1.5, phone_half_length - power_button_length / 2 - power_button_top_offset, side_button_vertical_offset]) {
     button_plug(button_length=power_button_length);
   }
 
-  translate([phone_width / 2 + 1.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, 0]) {
-    button_plug(button_length=volume_button_length);
+  translate([phone_width / 2 + 1.5, phone_half_length - volume_button_length / 2 - volume_button_top_offset, side_button_vertical_offset]) {
+    button_plug(button_length=volume_button_length, split_gap=0.5);
   }
 }
 
@@ -321,20 +323,28 @@ module button_plug(
   button_length = power_button_length,
   button_radius = case_button_radius,
   protrusion = case_button_protrusion,
-  wall_overlap = case_button_wall_overlap
+  wall_overlap = case_button_wall_overlap,
+  split_gap = 0
 ) {
   end_offset = button_length / 2 - button_radius;
 
-  intersection() {
-    hull() {
-      for (y = [-end_offset, end_offset])
-        translate([0, y, 0])
-          sphere(r=button_radius);
+  difference() {
+    intersection() {
+      hull() {
+        for (y = [-end_offset, end_offset])
+          translate([0, y, 0])
+            sphere(r=button_radius);
+      }
+
+      // Trim both sides of the spherical hull to X=[-wall_overlap, protrusion].
+      translate([(protrusion - wall_overlap) / 2, 0, 0])
+        cube([protrusion + wall_overlap, button_length, button_radius * 2], center=true);
     }
 
-    // Trim both sides of the spherical hull to X=[-wall_overlap, protrusion].
-    translate([(protrusion - wall_overlap) / 2, 0, 0])
-      cube([protrusion + wall_overlap, button_length, button_radius * 2], center=true);
+    // Split the external cap while retaining its overlap inside the case wall.
+    if (split_gap > 0)
+      translate([(protrusion + 0.01) / 2, 0, 0])
+        cube([protrusion + 0.01, split_gap, button_radius * 2 + 0.01], center=true);
   }
 }
 
@@ -510,6 +520,7 @@ module preview() {
 }
 
 phone_case();
+//preview();
 //inner_case_volume_no_round_bottom();
 
 /*
