@@ -48,7 +48,7 @@ module foot_recesses() {
 module outer_outline_with_phones(wall_thickness = 0) {
   difference() {
     outer_outline(wall_thickness);
-    phone_outlines(wall_thickness);
+    phone_outlines(-wall_thickness);
   }
 }
 
@@ -94,12 +94,12 @@ module bottom_part() {
 }
 
 module phone_outlines(wall_thickness = 0) {
-  translate([46, 23, 31])
-    rotate([10, 0, 0])
+  translate([46, 26, 38.5])
+    rotate([5, 0, 0])
       phone_outline(wall_thickness);
 
-  translate([-46, 23, 31])
-    rotate([10, 0, 0])
+  translate([-46, 26, 38.5])
+    rotate([5, 0, 0])
       phone_outline(wall_thickness);
 }
 
