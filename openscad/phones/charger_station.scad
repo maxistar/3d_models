@@ -24,33 +24,52 @@ module rounded_rectangle(width, length, radius) {
 
 module outer_outline(offset = 0, side_clearance = 0) {
   linear_extrude(height=box_height - offset, center=true)
-    rounded_rectangle(box_width - offset + 2 * side_clearance,
-                      box_length - offset + 2 * side_clearance,
-                      corner_radius);
+    rounded_rectangle(
+      box_width - offset + 2 * side_clearance,
+      box_length - offset + 2 * side_clearance,
+      corner_radius
+    );
 }
 
 module foot_recesses() {
   for (x = [-1, 1])
     for (y = [-1, 1])
-      translate([
-        x * (box_width / 2 - foot_edge_distance - foot_width / 2),
-        y * (box_length / 2 - foot_edge_distance - foot_length / 2),
-        -box_height / 2 - boolean_overlap
-      ])
+      translate(
+        [
+          x * (box_width / 2 - foot_edge_distance - foot_width / 2),
+          y * (box_length / 2 - foot_edge_distance - foot_length / 2),
+          -box_height / 2 - boolean_overlap,
+        ]
+      )
         linear_extrude(height=foot_recess_depth + boolean_overlap)
           rounded_rectangle(foot_width, foot_length, foot_radius);
 }
 
-module upper_part() {
+module outer_outline_with_phones(wall_thickness = 0) {
   difference() {
-    outer_outline();
+    outer_outline(wall_thickness);
+    phone_outlines(wall_thickness);
+  }
+}
+
+
+module upper_part() {
+
+          //phone_outlines();
+
+
+  difference() {
+
+    outer_outline_with_phones();
+    
     translate([-box_width, -box_length, -box_height + joint_height])
       cube([2 * box_width, 2 * box_length, box_height]);
-    outer_outline(wall_thickness * 2);
+    outer_outline_with_phones(wall_thickness * 2);
+
   }
 
   difference() {
-    outer_outline();
+    outer_outline_with_phones();
     translate([-box_width, -box_length, -box_height])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness, joint_clearance);
@@ -72,6 +91,22 @@ module bottom_part() {
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness * 2);
   }
+}
+
+module phone_outlines(wall_thickness = 0) {
+  translate([46, 23, 31])
+    rotate([10, 0, 0])
+      phone_outline(wall_thickness);
+
+  translate([-46, 23, 31])
+    rotate([10, 0, 0])
+      phone_outline(wall_thickness);
+}
+
+module phone_outline(wall_thickness = 0) {
+  cube([85 - 2 * wall_thickness, 150- 2 * wall_thickness, 30- 2 * wall_thickness], center=true);
+
+  cube([35- 2 * wall_thickness, 200- 2 * wall_thickness, 30- 2 * wall_thickness ], center=true);
 }
 
 translate([0, 0, 30])
