@@ -1,7 +1,7 @@
 $fn = 50;
 
 box_width = 200;
-box_length = 100;
+box_length = 140;
 box_height = 50;
 corner_radius = 10;
 wall_thickness = 2;
@@ -94,12 +94,12 @@ module bottom_part() {
 }
 
 module phone_outlines(wall_thickness = 0) {
-  translate([46, 26, 38.5])
-    rotate([5, 0, 0])
+  translate([46, 26, 36])
+    rotate([8, 0, 0])
       phone_outline(wall_thickness);
 
-  translate([-46, 26, 38.5])
-    rotate([5, 0, 0])
+  translate([-46, 26, 36])
+    rotate([8, 0, 0])
       phone_outline(wall_thickness);
 }
 
