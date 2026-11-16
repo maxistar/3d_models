@@ -3,6 +3,7 @@ $fn = 50;
 box_width = 200;
 box_length = 120;
 box_height = 50;
+split_level = -10;
 corner_radius = 10;
 wall_thickness = 2;
 joint_height = 3;
@@ -62,7 +63,7 @@ module upper_part() {
 
     outer_outline_with_phones();
     
-    translate([-box_width, -box_length, -box_height + joint_height])
+    translate([-box_width, -box_length, split_level + joint_height - box_height])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline_with_phones(wall_thickness * 2);
 
@@ -70,7 +71,7 @@ module upper_part() {
 
   difference() {
     outer_outline_with_phones();
-    translate([-box_width, -box_length, -box_height])
+    translate([-box_width, -box_length, split_level - box_height])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness, joint_clearance);
   }
@@ -79,7 +80,7 @@ module upper_part() {
 module bottom_part() {
   difference() {
     outer_outline();
-    translate([-box_width, -box_length, 0])
+    translate([-box_width, -box_length, split_level])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness * 2);
     foot_recesses();
@@ -87,19 +88,19 @@ module bottom_part() {
 
   difference() {
     outer_outline(wall_thickness);
-    translate([-box_width, -box_length, joint_height])
+    translate([-box_width, -box_length, split_level + joint_height])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness * 2);
   }
 }
 
 module phone_outlines(wall_thickness = 0) {
-  translate([46, 26, 36])
-    rotate([8, 0, 0])
+  translate([46, 26, 35])
+    rotate([10, 0, 0])
       phone_outline(wall_thickness);
 
-  translate([-46, 26, 36])
-    rotate([8, 0, 0])
+  translate([-46, 26, 35])
+    rotate([10, 0, 0])
       phone_outline(wall_thickness);
 }
 
