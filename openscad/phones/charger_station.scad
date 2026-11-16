@@ -1,7 +1,7 @@
 $fn = 50;
 
 box_width = 200;
-box_length = 140;
+box_length = 120;
 box_height = 50;
 corner_radius = 10;
 wall_thickness = 2;
