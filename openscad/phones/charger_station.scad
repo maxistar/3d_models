@@ -1,3 +1,18 @@
+/**
+  * Charger station for two phones.
+  *
+  * @author Max Starikov
+  * @license MIT
+
+
+
+
+todo:
+- make the upeer part tilted
+- add crew connections
+
+  */
+
 $fn = 50;
 
 box_width = 200;
@@ -13,6 +28,7 @@ foot_length = 10;
 foot_radius = 2;
 foot_recess_depth = 0.5;
 foot_edge_distance = 10;
+power_hole_diameter = 7;
 boolean_overlap = 0.1;
 
 module rounded_rectangle(width, length, radius) {
@@ -44,6 +60,20 @@ module foot_recesses() {
       )
         linear_extrude(height=foot_recess_depth + boolean_overlap)
           rounded_rectangle(foot_width, foot_length, foot_radius);
+}
+
+module power_connector_hole() {
+  translate([
+    box_width / 2 - wall_thickness / 2,
+    40,
+    (-box_height / 2 + split_level) / 2
+  ])
+    rotate([0, 90, 0])
+      cylinder(
+        d=power_hole_diameter,
+        h=wall_thickness + 2 * boolean_overlap,
+        center=true
+      );
 }
 
 module outer_outline_with_phones(wall_thickness = 0) {
@@ -84,6 +114,7 @@ module bottom_part() {
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness * 2);
     foot_recesses();
+    power_connector_hole();
   }
 
   difference() {
@@ -91,6 +122,7 @@ module bottom_part() {
     translate([-box_width, -box_length, split_level + joint_height])
       cube([2 * box_width, 2 * box_length, box_height]);
     outer_outline(wall_thickness * 2);
+    power_connector_hole();
   }
 }
 
