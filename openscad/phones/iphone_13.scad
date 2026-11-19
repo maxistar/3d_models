@@ -39,9 +39,9 @@ cameras_distanse = 30.14;
 camera_radius = 18.34 / 2;
 
 // сторона камеры по горизонтали 32
-cameras_distanse_x = 32 - camera_radius * 2;
+cameras_distanse_x = 30 - camera_radius * 2;
 //по вертикали 34. 
-cameras_distanse_y = 34 - camera_radius * 2;
+cameras_distanse_y = 32 - camera_radius * 2;
 
 // Сверху. 2.5/3. 
 camera_top_offset = 2.5;
@@ -74,7 +74,7 @@ silent_switcher_length = 6;
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
-corner_radius = 10;
+corner_radius = 11;
 edge_radius = 1;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
@@ -197,15 +197,15 @@ module phone_body_model() {
   sideButtons();
 }
 
-module sideButton(button_length = power_button_length, button_height = 1, buttons_radius = buttons_radius, button_radius_offset=0) {
+module sideButton(button_length = power_button_length, button_height = 1, buttons_radius = buttons_radius, button_radius_offset = 0) {
   hull() {
     translate([0, button_length / 2 - buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius+button_radius_offset, h=button_height, center=true);
+        cylinder(r=buttons_radius + button_radius_offset, h=button_height, center=true);
 
     translate([0, -button_length / 2 + buttons_radius, 0])
       rotate([0, 90, 0])
-        cylinder(r=buttons_radius+button_radius_offset, h=button_height, center=true);
+        cylinder(r=buttons_radius + button_radius_offset, h=button_height, center=true);
   }
 }
 
@@ -302,7 +302,7 @@ module usb_cut() {
 module phone_case() {
 
   difference() {
-    outer_case_body(offset=1.5, edge_radius=0, height_thickness_offset=-2);
+    outer_case_body(offset=1.5, edge_radius=0, height_thickness_offset=-1);
 
     //inner_case_volume();
     inner_case_volume_no_round_bottom();
@@ -332,14 +332,13 @@ module phone_case() {
     button_radius_offset = 1;
     sideButtons(button_radius_offset);
 
+    translate([-(phone_width / 2 + 2.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=1);
+    }
 
-  translate([-(phone_width / 2 + 2.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset = 1);
-  }
-
-  translate([-(phone_width / 2 + 2.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset = 1);
-  }
+    translate([-(phone_width / 2 + 2.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=1);
+    }
 
     /*
     // Top edge: speaker, USB-C, speaker.
@@ -414,11 +413,11 @@ module phone_case() {
   }
   */
 
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset+ buttons_radius, 0]) {
+  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_up_button_length, button_height=1, buttons_radius=buttons_radius);
   }
 
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset+ buttons_radius, 0]) {
+  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_down_button_length, button_height=1, buttons_radius=buttons_radius);
   }
 }

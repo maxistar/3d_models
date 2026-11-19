@@ -28,9 +28,10 @@ $fn = 30;
 
 phone_width = 74.5;
 phone_length = 156.6;
+phone_thickness = 8.8;
 corner_radius = 9;
 outline_z_scale = 0.9;
-phone_thickness = 8.8;
+
 
 // Coordinates of the corner centers, derived from the full profile dimensions.
 phone_corner_x = phone_width / 2 - corner_radius;
@@ -224,10 +225,10 @@ module button_inner_cutout(center_y, button_length) {
 
 module phone_model() {
 
-  
-  difference() {
+  cube([phone_width, phone_length, phone_thickness], center = true);
+  //difference() {
     inner_case_volume();
-  }
+  //}
 }
 
 // ── Case ─────────────────────────────────────────────────────────────────────
@@ -465,8 +466,8 @@ translate([0, 0, 8 - 50]) {
   phone_model();
 }
 
-cover_layout();
+//cover_layout();
 
-translate([0, 0, 8 - 100]) {
-  phone_solid();
-}
+//translate([0, 0, 8 - 100]) {
+//  phone_solid();
+//}
