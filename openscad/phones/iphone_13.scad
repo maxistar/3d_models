@@ -22,7 +22,7 @@
 
 // ── Rendering ────────────────────────────────────────────────────────────────
 
-$fn = 50;
+$fn = 100;
 
 // masured values
 // ширина 71.05
@@ -209,19 +209,25 @@ module sideButton(button_length = power_button_length, button_height = 1, button
   }
 }
 
-module sideButtons(button_radius_offset = 0, include_power_button = true) {
+module sideButtons(
+  button_radius_offset = 0,
+  include_power_button = true,
+  include_volume_buttons = true
+) {
   if (include_power_button) {
     translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
       sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
     }
   }
 
-  translate([-(phone_width / 2 - 1), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
-  }
+  if (include_volume_buttons) {
+    translate([-(phone_width / 2 - 1), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
+    }
 
-  translate([-(phone_width / 2 - 1), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
+    translate([-(phone_width / 2 - 1), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
+    }
   }
 
   translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
@@ -240,6 +246,18 @@ module power_button_inner_recess(depth = 10, radius = 3) {
       for (y = [-end_offset, end_offset])
         translate([0, y, 0])
           rotate([0, -90, 0])
+            cylinder(h=depth, r=radius);
+}
+
+module volume_button_inner_recess(button_length, button_y, depth = 10, radius = 3) {
+  end_offset = button_length / 2 - radius;
+
+  // Start just inside the left outer wall, then cut inward along +X.
+  translate([-phone_half_width - 0.45, button_y, 0])
+    hull()
+      for (y = [-end_offset, end_offset])
+        translate([0, y, 0])
+          rotate([0, 90, 0])
             cylinder(h=depth, r=radius);
 }
 
@@ -347,16 +365,20 @@ module phone_case() {
 
     button_radius_offset = 1;
     // Keep the power-button opening closed and thin its wall from the inside.
-    sideButtons(button_radius_offset, include_power_button=false);
+    sideButtons(
+      button_radius_offset,
+      include_power_button=false,
+      include_volume_buttons=false
+    );
     power_button_inner_recess();
-
-    translate([-(phone_width / 2 + 2.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
-      sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=1);
-    }
-
-    translate([-(phone_width / 2 + 2.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
-      sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=1);
-    }
+    volume_button_inner_recess(
+      volume_up_button_length,
+      phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius
+    );
+    volume_button_inner_recess(
+      volume_down_button_length,
+      phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius
+    );
 
     /*
     // Top edge: speaker, USB-C, speaker.
@@ -426,6 +448,21 @@ module phone_case() {
     mirror([1, 0, 0])
       button_plug(power_button_length / 2 - 3);
 
+  // Raised volume buttons, placed with the same outward offset as the power button.
+  translate([
+    -phone_half_width - 1,
+    phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius,
+    0,
+  ])
+    button_plug(volume_up_button_length / 2 - 3);
+
+  translate([
+    -phone_half_width - 1,
+    phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius,
+    0,
+  ])
+    button_plug(volume_down_button_length / 2 - 3);
+
   /*
   translate([-38, -17.6, 0])
     button_plug(4.5);
@@ -440,13 +477,6 @@ module phone_case() {
   }
   */
 
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_up_button_length, button_height=1, buttons_radius=buttons_radius);
-  }
-
-  translate([-(phone_width / 2 + 1.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=volume_down_button_length, button_height=1, buttons_radius=buttons_radius);
-  }
 }
 
 module button_plug(length = 10) {
