@@ -1,5 +1,5 @@
 /**
- * Xiaomi Mi 9 Pro case and cover.
+ * iPhone 13 case and cover.
  *
  * Coordinate system:
  *   X — phone width, left/right
@@ -41,7 +41,7 @@ camera_radius = 18.34 / 2;
 // сторона камеры по горизонтали 32
 cameras_distanse_x = 30 - camera_radius * 2;
 //по вертикали 34. 
-cameras_distanse_y = 32 - camera_radius * 2;
+cameras_distanse_y = 30 - camera_radius * 2;
 
 // Сверху. 2.5/3. 
 camera_top_offset = 2.5;
@@ -209,22 +209,38 @@ module sideButton(button_length = power_button_length, button_height = 1, button
   }
 }
 
-module sideButtons(button_radius_offset = 0) {
-  translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
+module sideButtons(button_radius_offset = 0, include_power_button = true) {
+  if (include_power_button) {
+    translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=power_button_length, button_height=5.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
+    }
   }
 
-  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
+  translate([-(phone_width / 2 - 1), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
   }
 
-  translate([-(phone_width / 2 - 0.5), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
+  translate([-(phone_width / 2 - 1), phone_half_length - volume_down_button_length / 2 - volume_down_button_top_offset + buttons_radius, 0]) {
     sideButton(button_length=volume_down_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=button_radius_offset);
   }
 
   translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
     sideButton(button_length=silent_switcher_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
   }
+}
+
+// Recess the inner side of the power-button wall, leaving a thin outer skin.
+module power_button_inner_recess(depth = 10, radius = 3) {
+  end_offset = power_button_length / 2 - radius;
+  button_y = phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius;
+
+  // Start just inside the outer wall, then cut inward along -X.
+  translate([phone_half_width + 0.45, button_y, 0])
+    hull()
+      for (y = [-end_offset, end_offset])
+        translate([0, y, 0])
+          rotate([0, -90, 0])
+            cylinder(h=depth, r=radius);
 }
 
 module cameraBlock2x2(camera_radius = camera_radius) {
@@ -330,7 +346,9 @@ module phone_case() {
     }
 
     button_radius_offset = 1;
-    sideButtons(button_radius_offset);
+    // Keep the power-button opening closed and thin its wall from the inside.
+    sideButtons(button_radius_offset, include_power_button=false);
+    power_button_inner_recess();
 
     translate([-(phone_width / 2 + 2.5), phone_half_length - volume_up_button_length / 2 - volume_up_button_top_offset + buttons_radius, 0]) {
       sideButton(button_length=volume_up_button_length, button_height=2.6, buttons_radius=buttons_radius, button_radius_offset=1);
@@ -398,6 +416,15 @@ module phone_case() {
         cylinder(h=43, r=7);
         */
   }
+
+  // Raised tactile pad, mirrored from the Mi 9 Pro button plug for the right side.
+  translate([
+    phone_half_width + 1,
+    phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius,
+    0,
+  ])
+    mirror([1, 0, 0])
+      button_plug(power_button_length / 2 - 3);
 
   /*
   translate([-38, -17.6, 0])
