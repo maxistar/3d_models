@@ -212,7 +212,8 @@ module sideButton(button_length = power_button_length, button_height = 1, button
 module sideButtons(
   button_radius_offset = 0,
   include_power_button = true,
-  include_volume_buttons = true
+  include_volume_buttons = true,
+  include_silent_switcher = true
 ) {
   if (include_power_button) {
     translate([phone_width / 2 - 0.5, phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius, 0]) {
@@ -230,8 +231,10 @@ module sideButtons(
     }
   }
 
-  translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
-    sideButton(button_length=silent_switcher_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
+  if (include_silent_switcher) {
+    translate([-(phone_width / 2 - 0.5), phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius, 0]) {
+      sideButton(button_length=silent_switcher_length, button_height=5.6, buttons_radius=buttons_radius + button_radius_offset);
+    }
   }
 }
 
@@ -259,6 +262,14 @@ module volume_button_inner_recess(button_length, button_y, depth = 10, radius = 
         translate([0, y, 0])
           rotate([0, 90, 0])
             cylinder(h=depth, r=radius);
+}
+
+module silent_switcher_cutout(extra_size = 0.5, depth = 5.6) {
+  switch_y = phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius;
+  switch_width = (buttons_radius + 1) * 2;
+
+  translate([-(phone_width / 2 - 0.5), switch_y, 0])
+    cube([depth, silent_switcher_length + extra_size, switch_width + extra_size], center=true);
 }
 
 module cameraBlock2x2(camera_radius = camera_radius) {
@@ -368,8 +379,10 @@ module phone_case() {
     sideButtons(
       button_radius_offset,
       include_power_button=false,
-      include_volume_buttons=false
+      include_volume_buttons=false,
+      include_silent_switcher=false
     );
+    silent_switcher_cutout();
     power_button_inner_recess();
     volume_button_inner_recess(
       volume_up_button_length,
