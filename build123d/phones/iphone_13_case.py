@@ -29,6 +29,10 @@ class IPhone13CaseParams:
     back_wall: float = 1.0
     fit_clearance: float = 0.2
     outer_edge_radius: float = 1.5
+    front_lip_height: float = 1.0
+    # The cavity has 0.2 mm per-side fit clearance; a further 0.2 mm per-side
+    # interference at the mouth matches the OpenSCAD opening profile.
+    front_opening_inset: float = 0.4
 
     # Camera island: the source forms one rounded rectangular relief from four
     # camera-sized cylinders.
@@ -168,6 +172,40 @@ def make_yz_capsule(
     return middle.fuse(negative_y_cap, positive_y_cap)
 
 
+def make_sliced_spherical_capsule(
+    profile_center_x: float,
+    slice_center_x: float,
+    y_center: float,
+    length: float,
+    radius: float,
+    slice_thickness: float,
+) -> Part:
+    """Make a button pad from a rounded capsule sliced to the case wall width."""
+    end_center_spacing = length - 2 * radius
+    middle = (
+        Pos(profile_center_x, y_center, 0)
+        * Rot(90, 0, 0)
+        * Cylinder(radius, end_center_spacing)
+    )
+    negative_y_cap = Pos(
+        profile_center_x,
+        y_center - end_center_spacing / 2,
+        0,
+    ) * Sphere(radius)
+    positive_y_cap = Pos(
+        profile_center_x,
+        y_center + end_center_spacing / 2,
+        0,
+    ) * Sphere(radius)
+    capsule = middle.fuse(negative_y_cap, positive_y_cap)
+    slice_box = Pos(slice_center_x, y_center, 0) * Box(
+        slice_thickness,
+        length + 2 * radius + 2.0,
+        2 * radius + 2.0,
+    )
+    return capsule.intersect(slice_box)
+
+
 def make_silent_switch_cutter(params: IPhone13CaseParams) -> Part:
     """Loft the switch opening from its wider exterior to narrower interior."""
     outer_length = params.silent_switch_length + params.silent_switch_outer_extra
@@ -205,6 +243,33 @@ def make_silent_switch_cutter(params: IPhone13CaseParams) -> Part:
     return cutter.part
 
 
+def make_front_lip_cutter(
+    cavity_width: float,
+    cavity_length: float,
+    cavity_corner_radius: float,
+    opening_inset: float,
+    transition_z: float,
+    outer_top_z: float,
+) -> Part:
+    """Create the tapered opening through the retaining lip at the case mouth."""
+    opening_width = cavity_width - 2 * opening_inset
+    opening_length = cavity_length - 2 * opening_inset
+    opening_corner_radius = cavity_corner_radius - opening_inset
+
+    with BuildPart() as lip_cutter:
+        with BuildSketch(Plane.XY.offset(transition_z)):
+            RectangleRounded(cavity_width, cavity_length, cavity_corner_radius)
+        with BuildSketch(Plane.XY.offset(outer_top_z)):
+            RectangleRounded(opening_width, opening_length, opening_corner_radius)
+        loft()
+
+        with BuildSketch(Plane.XY.offset(outer_top_z)):
+            RectangleRounded(opening_width, opening_length, opening_corner_radius)
+        extrude(amount=1.0)
+
+    return lip_cutter.part
+
+
 def make_phone_case(params: IPhone13CaseParams = IPhone13CaseParams()) -> Part:
     """Construct the phone case and raised power/volume button pads."""
     outer_width = params.phone_width + 2 * params.wall_thickness
@@ -222,15 +287,26 @@ def make_phone_case(params: IPhone13CaseParams = IPhone13CaseParams()) -> Part:
     )
 
     cavity_bottom = outer_z_bottom + params.back_wall
-    cavity_top = outer_z_bottom + outer_height + 1.0
+    outer_top_z = outer_z_bottom + outer_height
+    transition_z = outer_top_z - params.front_lip_height
     cavity = make_rounded_prism(
         width=params.phone_width + 2 * params.fit_clearance,
         length=params.phone_length + 2 * params.fit_clearance,
         corner_radius=params.phone_corner_radius + params.fit_clearance,
         z_bottom=cavity_bottom,
-        height=cavity_top - cavity_bottom,
+        height=transition_z - cavity_bottom,
     )
     case = outer_case.cut(cavity)
+
+    front_lip_cutter = make_front_lip_cutter(
+        cavity_width=params.phone_width + 2 * params.fit_clearance,
+        cavity_length=params.phone_length + 2 * params.fit_clearance,
+        cavity_corner_radius=params.phone_corner_radius + params.fit_clearance,
+        opening_inset=params.front_opening_inset,
+        transition_z=transition_z,
+        outer_top_z=outer_top_z,
+    )
+    case = case.cut(front_lip_cutter)
 
     # The camera relief is the rounded hull of four circles in the source.
     camera_center_x = (
@@ -317,13 +393,16 @@ def make_phone_case(params: IPhone13CaseParams = IPhone13CaseParams()) -> Part:
             + params.button_pad_projection
             - params.button_pad_thickness / 2
         )
-        pad = make_yz_capsule(
-            x_start=pad_center_x - params.button_pad_thickness / 2,
+        profile_center_x = side * (
+            outer_side_x - params.button_pad_projection / 2
+        )
+        pad = make_sliced_spherical_capsule(
+            profile_center_x=profile_center_x,
+            slice_center_x=pad_center_x,
             y_center=y_center,
             length=pad_length,
-            width=2 * params.button_pad_radius,
-            depth=params.button_pad_thickness,
-            x_direction=1,
+            radius=params.button_pad_radius,
+            slice_thickness=params.button_pad_thickness,
         )
         case = case.fuse(pad)
 
