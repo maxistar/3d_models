@@ -30,7 +30,7 @@ phone_width = 71.05;
 //длинна 146.5
 phone_length = 146.5;
 // Толщина устройства 8.5
-phone_thickness = 8.5;
+phone_thickness = 8.7;
 
 // - Расстояние между камерами 30.14. 
 cameras_distanse = 30.14;
@@ -44,15 +44,15 @@ cameras_distanse_x = 30 - camera_radius * 2;
 cameras_distanse_y = 30 - camera_radius * 2;
 
 // Сверху. 2.5/3. 
-camera_top_offset = 2.5;
+camera_top_offset = 2;
 // расстояние доканта сбоку 2.5
-camera_side_offset = 2.5;
+camera_side_offset = 2;
 
 //  длина 18
-power_button_length = 18;
+power_button_length = 19;
 
 //45
-power_button_top_offset = 45;
+power_button_top_offset = 43.5;
 
 // Кнопка. громкости увеличение громкости расстояние до верха 40 мм длина 11 мм 
 volume_up_button_top_offset = 40;
@@ -67,8 +67,8 @@ volume_down_button_length = 11;
 // silent switcher
 // Расстояние до верха 30
 // Ширина 6 Свитчер без звучного режима. 
-silent_switcher_top_offset = 30;
-silent_switcher_length = 6;
+silent_switcher_top_offset = 29.5;
+silent_switcher_length = 7;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
@@ -244,7 +244,7 @@ module power_button_inner_recess(depth = 10, radius = 3) {
   button_y = phone_half_length - power_button_length / 2 - power_button_top_offset + buttons_radius;
 
   // Start just inside the outer wall, then cut inward along -X.
-  translate([phone_half_width + 0.45, button_y, 0])
+  translate([phone_half_width + 0.5, button_y, 0])
     hull()
       for (y = [-end_offset, end_offset])
         translate([0, y, 0])
@@ -256,7 +256,7 @@ module volume_button_inner_recess(button_length, button_y, depth = 10, radius = 
   end_offset = button_length / 2 - radius;
 
   // Start just inside the left outer wall, then cut inward along +X.
-  translate([-phone_half_width - 0.45, button_y, 0])
+  translate([-phone_half_width - 0.5, button_y, 0])
     hull()
       for (y = [-end_offset, end_offset])
         translate([0, y, 0])
@@ -264,12 +264,22 @@ module volume_button_inner_recess(button_length, button_y, depth = 10, radius = 
             cylinder(h=depth, r=radius);
 }
 
-module silent_switcher_cutout(extra_size = 0.5, depth = 5.6) {
+module silent_switcher_cutout(extra_size = 0.5, inner_taper = 1) {
   switch_y = phone_half_length - silent_switcher_length / 2 - silent_switcher_top_offset + buttons_radius;
-  switch_width = (buttons_radius + 1) * 2;
+  outer_length = silent_switcher_length + extra_size;
+  outer_width = (buttons_radius + 1) * 2 + extra_size;
+  inner_length = outer_length - inner_taper;
+  inner_width = outer_width - inner_taper;
+  outer_x = -(phone_half_width + 1.5);
+  inner_x = -phone_half_width;
 
-  translate([-(phone_width / 2 - 0.5), switch_y, 0])
-    cube([depth, silent_switcher_length + extra_size, switch_width + extra_size], center=true);
+  hull() {
+    translate([outer_x, switch_y, 0])
+      cube([0.1, outer_length, outer_width], center=true);
+
+    translate([inner_x, switch_y, 0])
+      cube([0.1, inner_length, inner_width], center=true);
+  }
 }
 
 module cameraBlock2x2(camera_radius = camera_radius) {
@@ -353,7 +363,7 @@ module phone_case() {
     inner_case_volume_no_round_bottom();
 
     linear_extrude(10)
-      phone_opening_profile(-0.1);
+      phone_opening_profile(0.2);
 
     // Open front of the case.
 
