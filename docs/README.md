@@ -1,10 +1,21 @@
 # Astro Starter Kit: Basics
 
 
-## Create links to models
+## Prepare local model assets
 
-`ln -s ../../build123d public/build123d`
-`ln -s ../../openscad public/openscad`
+Run from the `docs` directory. OpenSCAD assets can be linked as before, but
+build123d should expose only generated STL files; linking the whole project also
+publishes its Python environment and can make Astro's static build fail.
+
+```sh
+ln -s ../../openscad public/openscad
+rm -rf public/build123d
+mkdir -p public/build123d/simple public/build123d/phones
+cp ../build123d/simple/*.stl public/build123d/simple/
+cp ../build123d/phones/*.stl public/build123d/phones/
+```
+
+Repeat the copy step after regenerating build123d STL files.
 
 ## 🧞 Commands
 

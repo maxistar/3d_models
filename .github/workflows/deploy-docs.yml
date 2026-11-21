@@ -44,9 +44,12 @@ jobs:
           rm -rf public/openscad public/build123d
           cp -r ../openscad public/openscad
           mkdir -p public/build123d/simple
+          mkdir -p public/build123d/phones
           cp ../build123d/simple/*.stl public/build123d/simple/
+          cp ../build123d/phones/*.stl public/build123d/phones/
           ls public/openscad
           ls public/build123d/simple
+          ls public/build123d/phones
 
       - name: Build project
         run: npm run build

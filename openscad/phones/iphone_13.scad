@@ -44,9 +44,9 @@ cameras_distanse_x = 30 - camera_radius * 2;
 cameras_distanse_y = 30 - camera_radius * 2;
 
 // Сверху. 2.5/3. 
-camera_top_offset = 2;
+camera_top_offset = 3;
 // расстояние доканта сбоку 2.5
-camera_side_offset = 2;
+camera_side_offset = 3;
 
 //  длина 18
 power_button_length = 19;
@@ -74,7 +74,7 @@ silent_switcher_length = 7;
 
 phone_half_width = phone_width / 2;
 phone_half_length = phone_length / 2;
-corner_radius = 11;
+corner_radius = 12;
 edge_radius = 1;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
@@ -366,11 +366,6 @@ module phone_case() {
       phone_opening_profile(0.2);
 
     // Open front of the case.
-
-    // Remove the upper part of the body to form the case rim.
-    translate([0, 0, 11.5]) {
-      cube([200, 200, 10], center=true);
-    }
 
     sockets();
 
