@@ -6,8 +6,9 @@
  *   Y — phone length, bottom/top
  *   Z — case thickness
  *
- * The phone body is centered around the X/Y origin. Values named
- * `phone_half_*` are half-dimensions used as corner coordinates.
+ * The phone body is centered around the X/Y origin. `phone_width` and
+ * `phone_length` are the full base profile dimensions, including corner radii,
+ * before clearance offsets and outer case rounding are applied.
 
 
    - make simple version
@@ -15,6 +16,8 @@
    - make usb
    - make round hollow for buttons
    - make rounding
+
+   - verify phone size - now it is too small!!! 
  */
 
 // ── Rendering ────────────────────────────────────────────────────────────────
@@ -23,11 +26,16 @@ $fn = 30;
 
 // ── Main dimensions (mm) ─────────────────────────────────────────────────────
 
-phone_half_width = 30 - 0.5;
-phone_half_length = 70.8 - 0.5;
+phone_width = 74.5;
+phone_length = 156.6;
+phone_thickness = 8.8;
 corner_radius = 9;
 outline_z_scale = 0.9;
-phone_thickness = 8.8;
+
+
+// Coordinates of the corner centers, derived from the full profile dimensions.
+phone_corner_x = phone_width / 2 - corner_radius;
+phone_corner_y = phone_length / 2 - corner_radius;
 
 // ── Hardware ─────────────────────────────────────────────────────────────────
 
@@ -37,13 +45,30 @@ magnet_radius = 4 / 2 + 0.05; // 4 mm magnet diameter plus clearance
 
 camera_position = [-23.2, -66, 0];
 
+// Side buttons: Y is the center of each button; length includes rounded ends.
+button_cutout_x = -38;
+button_plug_x = -37.9;
+power_button_y = -17.5;
+volume_button_y = -38;
+power_button_length = 15;
+volume_button_length = 24;
+button_cutout_radius = 3;
+button_plug_radius = 2.4;
+power_button_plug_y_offset = -0.1;
+
+// Flat faces of the button plugs, relative to their center on X.
+button_plug_right_trim_x = 5.8;
+button_plug_left_trim_x = -6.3;
+button_plug_trim_width = 10;
+button_plug_trim_height = 10;
+
 latch_positions = [
   [-20, 50, 0],
   [-20, 20, 0],
   [-20, -10, 0],
 ];
 
-cover_layout_x_offset = phone_half_width * 2 + 37;
+cover_layout_x_offset = phone_corner_x * 2 + 37;
 
 strip_thickness = 0.5;
 
@@ -53,8 +78,8 @@ strip_thickness = 0.5;
 module outer_case_body(offset = 0, thickness_offset = 0, edge_radius = 3) {
   minkowski() {
     hull() {
-      for (x = [-phone_half_width, phone_half_width]) {
-        for (y = [-phone_half_length, phone_half_length]) {
+      for (x = [-phone_corner_x, phone_corner_x]) {
+        for (y = [-phone_corner_y, phone_corner_y]) {
           translate([x, y, 0])
             cylinder(
               h=phone_thickness + thickness_offset,
@@ -71,8 +96,8 @@ module outer_case_body(offset = 0, thickness_offset = 0, edge_radius = 3) {
 // Inner volume subtracted from the case to create the wall thickness.
 module inner_case_volume(offset = 0) {
   hull() {
-    for (x = [-phone_half_width, phone_half_width]) {
-      for (y = [-phone_half_length, phone_half_length]) {
+    for (x = [-phone_corner_x, phone_corner_x]) {
+      for (y = [-phone_corner_y, phone_corner_y]) {
         translate([x, y, 0])
           scale([1, 1, outline_z_scale])
             sphere(corner_radius - offset);
@@ -81,11 +106,20 @@ module inner_case_volume(offset = 0) {
   }
 }
 
+module inner_case_volume_no_round_bottom(offset = 0) {
+
+  inner_case_volume(offset);
+
+  translate([0, 0, -phone_thickness / 2 + 0.7])
+    linear_extrude(phone_thickness, center=true)
+      phone_opening_profile(offset);
+}
+
 // 2D phone opening profile used for the flat cover.
-module phone_opening_profile(offset = 0) {
+module phone_opening_profile(offset = 0, corner_radius = corner_radius) {
   hull() {
-    for (x = [-phone_half_width, phone_half_width]) {
-      for (y = [-phone_half_length, phone_half_length]) {
+    for (x = [-phone_corner_x, phone_corner_x]) {
+      for (y = [-phone_corner_y, phone_corner_y]) {
         translate([x, y])
           circle(corner_radius - offset);
       }
@@ -106,123 +140,159 @@ module camera_cut(offset = 0, height = 20) {
   }
 }
 
-module speaker_cut() {
+// Slot along X; center_distance is the spacing between the rounded ends.
+module rounded_slot_cut(center_distance, radius, depth = 10) {
   rotate([90, 0, 0])
-    linear_extrude(height=10)
+    linear_extrude(height=depth)
       hull() {
-        translate([-5, 0])
-          circle(r=1.5);
+        translate([-center_distance / 2, 0])
+          circle(r=radius);
 
-        translate([5, 0])
-          circle(r=1.5);
+        translate([center_distance / 2, 0])
+          circle(r=radius);
       }
 }
 
-module usb_cut() {
-  rotate([90, 0, 0])
-    linear_extrude(height=10)
-      hull() {
-        translate([-3.5, 0])
-          circle(r=3);
+module speaker_cut() {
+  rounded_slot_cut(center_distance=10, radius=1.5);
+}
 
-        translate([3.5, 0])
-          circle(r=3);
-      }
+module usb_cut() {
+  rounded_slot_cut(center_distance=7, radius=3);
+}
+
+// Top edge: speaker, USB-C, speaker.
+module top_edge_cutouts() {
+  translate([16, 83, 0])
+    speaker_cut();
+
+  translate([0, 83, 0])
+    usb_cut();
+
+  translate([-16, 83, 0])
+    speaker_cut();
+}
+
+// Bottom edge: audio jack and microphones.
+module bottom_edge_cutouts() {
+  translate([22.5, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=3.3);
+
+  translate([-25, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=2);
+
+  translate([-10, -60, 0])
+    rotate([90, 0, 0])
+      cylinder(h=30, r=2);
+}
+
+module button_inner_cutouts() {
+      button_inner_cutout(power_button_y, power_button_length);
+      button_inner_cutout(volume_button_y, volume_button_length);
+}
+
+module button_cutouts() {
+
+  difference() {
+    union() {
+      button_cutout(power_button_y, power_button_length);
+      button_cutout(volume_button_y, volume_button_length);
+    }
+    cube([phone_width - 1, phone_length, phone_thickness], center=true);
+  }
+}
+
+module button_cutout(center_y, button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
+
+  translate([button_cutout_x, center_y, 0])
+    hull()for (y = [-end_offset, end_offset])
+      translate([0, y, 0])
+        sphere(r=button_cutout_radius);
+}
+
+module button_inner_cutout(center_y, button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
+
+  translate([button_cutout_x+1.3, center_y, 0])
+    hull()for (y = [-end_offset, end_offset])
+      translate([0, y, 0])
+    rotate([0, 90, 0])
+      cylinder(h=10, r=3);
+}
+
+module phone_model() {
+
+  cube([phone_width, phone_length, phone_thickness], center = true);
+  //difference() {
+    inner_case_volume();
+  //}
 }
 
 // ── Case ─────────────────────────────────────────────────────────────────────
 
 module phone_case() {
-  difference() {
-    outer_case_body(offset=-2, thickness_offset=1, edge_radius=2);
 
-    inner_case_volume(1.5);
+  difference() {
+    outer_case_body(offset=1, thickness_offset=1, edge_radius=2);
+
+    //inner_case_volume(1);
+    inner_case_volume_no_round_bottom(1);
 
     // Open front of the case.
     linear_extrude(10)
-      phone_opening_profile(2.5);
+      phone_opening_profile(2.5, corner_radius=corner_radius);
 
     // Remove the upper part of the body to form the case rim.
     translate([0, 0, 5 + 5])
       cube([200, 200, 10], center=true);
 
-    // Top edge: speaker, USB-C, speaker.
-    translate([16, 83, 0])
-      speaker_cut();
-
-    translate([0, 83, 0])
-      usb_cut();
-
-    translate([-16, 83, 0])
-      speaker_cut();
-
-    // Bottom edge: audio jack and microphones.
-    translate([22.5, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=3.3);
-
-    translate([-25, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    translate([-10, -60, 0])
-      rotate([90, 0, 0])
-        cylinder(h=30, r=2);
-
-    // Side buttons.
-    translate([-39, -30, 0]) {
-      // Power button.
-      hull() {
-        translate([0, 20 - 3, 0])
-          sphere(r=3);
-
-        translate([0, 8, 0])
-          sphere(r=3);
-      }
-
-      // Volume buttons.
-      hull() {
-        translate([0, 1, 0])
-          sphere(r=3);
-
-        translate([0, -20 + 3, 0])
-          sphere(r=3);
-      }
-    }
+    top_edge_cutouts();
+    bottom_edge_cutouts();
+    //button_cutouts();
+    button_inner_cutouts();
 
     camera_cut(1);
 
+    /*
     for (position = latch_positions)
       translate(position)
         latch_cut();
+        */
 
     translate([-45.1, -8.5, 0])
       rotate([90, 0, 0])
         cylinder(h=43, r=7);
   }
 
-  translate([-38, -17.6, 0])
-    button_plug(4.5);
+  //button_cutouts();
+  //button_inner_cutouts();
 
-  translate([-38, -38, 0])
-    button_plug(9);
+  translate([button_plug_x, power_button_y + power_button_plug_y_offset, 0])
+    button_plug(power_button_length);
+
+  translate([button_plug_x, volume_button_y, 0])
+    button_plug(volume_button_length);
 }
 
-module button_plug(length = 10) {
+module button_plug(button_length = power_button_length) {
+  end_offset = button_length / 2 - button_cutout_radius;
 
   difference() {
     hull() {
-      translate([0, length, 0])
-        sphere(2.4);
-      translate([0, -length, 0])
-        sphere(2.4);
+      translate([0, end_offset, 0])
+        sphere(button_plug_radius);
+      translate([0, -end_offset, 0])
+        sphere(button_plug_radius);
     }
 
-    translate([5.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+    translate([button_plug_right_trim_x, 0, 0])
+      cube([button_plug_trim_width, end_offset * 2 + button_plug_radius * 2, button_plug_trim_height], center=true);
 
-    translate([-6.5, 0, 0])
-      cube([10, length * 2 + 2.4 * 2, 10], center=true);
+    translate([button_plug_left_trim_x, 0, 0])
+      cube([button_plug_trim_width, end_offset * 2 + button_plug_radius * 2, button_plug_trim_height], center=true);
   }
 }
 
@@ -263,7 +333,7 @@ module latch_cut() {
 }
 
 module magnetic_latch() {
-  translate([-phone_half_width * 2 - 12, 0, 0]) {
+  translate([-phone_corner_x * 2 - 12, 0, 0]) {
     difference() {
       cylinder(h=2.3, r=10);
       cylinder(h=10, r=magnet_radius);
@@ -276,10 +346,10 @@ module magnetic_latch() {
   }
 
   hull() {
-    translate([-phone_half_width, 0, 0])
+    translate([-phone_corner_x, 0, 0])
       cylinder(h=strip_thickness, r=10);
 
-    translate([-phone_half_width * 2 - 10, 0, 0])
+    translate([-phone_corner_x * 2 - 10, 0, 0])
       cylinder(h=strip_thickness, r=10);
   }
 }
@@ -328,9 +398,10 @@ module magnet_cover() {
 }
 
 module connector_strip() {
+  // Span between the corner centers keeps the strip clear of the rounded ends.
   translate([55, 0])
     linear_extrude(strip_thickness)
-      square([100, phone_half_length * 2], center=true);
+      square([100, phone_corner_y * 2], center=true);
 }
 
 // ── Print layout ─────────────────────────────────────────────────────────────
@@ -379,14 +450,24 @@ module phone_solid($fn = 30) {
 
   // Thin connector strip used to keep the parts together while printing.
   connector_strip();
+
+translate([0, 0, 8]) {
+    cube([phone_width, phone_length, phone_thickness], center=true);
+}
+
+  //inner_case_volume_no_round_bottom();
 }
 
 translate([0, 0, 8 + 50]) {
   phone_case();
 }
 
-cover_layout();
-
-translate([0, 0, 8 - 100]) {
-  phone_solid();
+translate([0, 0, 8 - 50]) {
+  phone_model();
 }
+
+//cover_layout();
+
+//translate([0, 0, 8 - 100]) {
+//  phone_solid();
+//}
