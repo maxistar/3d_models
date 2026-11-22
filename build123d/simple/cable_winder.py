@@ -35,10 +35,34 @@ class CableWinderParams:
 
 
 def make_wire_channel(diameter: float, spool_diameter: float) -> Part:
-    """Wire channel primitive: torus around spool axis."""
-    with BuildPart() as channel:
-        Torus(major_radius=spool_diameter / 2, minor_radius=diameter / 2)
-    return channel.part
+    """Build the paired clipped revolutions used by OpenSCAD wireChannel()."""
+    revolve_offset = (spool_diameter + diameter) / 4
+
+    with BuildPart() as revolved_channel:
+        with BuildSketch(Plane.XZ):
+            with Locations((revolve_offset, 0)):
+                Circle(diameter / 2)
+            with Locations((revolve_offset, diameter * 5)):
+                Rectangle(diameter, diameter * 10)
+        revolve(axis=Axis.Z)
+
+    clip_box = Pos(
+        0,
+        (spool_diameter + diameter * 2) / 2,
+        diameter * 5,
+    ) * Box(
+        spool_diameter + diameter * 2,
+        spool_diameter + diameter * 2,
+        diameter * 11,
+    )
+    channel_half = revolved_channel.part.cut(clip_box)
+    first_half = Pos(-revolve_offset, 0, 0) * channel_half
+    opposite_half = (
+        Pos(revolve_offset, 0, 0)
+        * Rot(0, 0, 180)
+        * channel_half
+    )
+    return first_half.fuse(opposite_half)
 
 
 def make_spool(
@@ -71,8 +95,8 @@ def make_spool(
 
         with Locations((0, 0, -spool_height / 2 + border_height + angle_height / 2)):
             Cone(
-                bottom_radius=outer_diameter / 2,
-                top_radius=max_diameter / 2,
+                bottom_radius=max_diameter / 2,
+                top_radius=outer_diameter / 2,
                 height=angle_height,
             )
 
