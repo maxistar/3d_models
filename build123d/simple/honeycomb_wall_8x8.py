@@ -6,36 +6,56 @@ Usage:
 """
 
 from pathlib import Path
+from math import sqrt
 from build123d import *
 
 # ── Parameters ────────────────────────────────────────────────────────────────
 
 ROWS = 8
 COLS = 8
-CELL_RADIUS = 12.0      # mm, center -> vertex of hex
-WALL = 1.8              # mm, hex wall thickness
-DEPTH = 8.0             # mm, panel thickness (Z)
+OUTER_APOTHEM = 11.8    # mm, OpenSCAD h_outer
+INNER_APOTHEM = 10.0    # mm, OpenSCAD h_inner
+DEPTH = 8.0             # mm, OpenSCAD total_height
+
+OUTER_RADIUS = 2 * OUTER_APOTHEM / sqrt(3)
+INNER_RADIUS = 2 * INNER_APOTHEM / sqrt(3)
+BOTTOM_INNER_RADIUS = INNER_RADIUS + 0.5
+TOP_INNER_RADIUS = INNER_RADIUS + 1.0
 
 # ── Single hex ring element ───────────────────────────────────────────────────
 
-with BuildPart() as cell_builder:
-    with BuildSketch():
-        RegularPolygon(radius=CELL_RADIUS, side_count=6)
-        RegularPolygon(radius=CELL_RADIUS - WALL, side_count=6, mode=Mode.SUBTRACT)
+with BuildPart() as outer_cell:
+    with BuildSketch(Plane.XY):
+        RegularPolygon(radius=OUTER_RADIUS, side_count=6, rotation=0)
     extrude(amount=DEPTH)
 
-cell = cell_builder.part.solids()[0]
+with BuildPart() as inner_cavity:
+    # These sections reproduce basic_polygon() in _honeycomb_element.scad.
+    for z, radius in (
+        (-0.01, BOTTOM_INNER_RADIUS),
+        (0.0, BOTTOM_INNER_RADIUS),
+        (0.5, INNER_RADIUS),
+        (DEPTH - 3.0, INNER_RADIUS),
+        (DEPTH - 2.0, TOP_INNER_RADIUS),
+        (DEPTH, TOP_INNER_RADIUS),
+        (DEPTH + 0.01, TOP_INNER_RADIUS),
+    ):
+        with BuildSketch(Plane.XY.offset(z)):
+            RegularPolygon(radius=radius, side_count=6, rotation=0)
+    loft(ruled=True)
+
+cell = outer_cell.part.cut(inner_cavity.part)
 
 # ── Array placement (honeycomb lattice) ──────────────────────────────────────
 
-x_step = (3**0.5) * CELL_RADIUS
-y_step = 1.5 * CELL_RADIUS
+x_step = 1.5 * OUTER_RADIUS
+y_step = sqrt(3) * OUTER_RADIUS
 
 panel = None
-for row in range(ROWS):
-    for col in range(COLS):
-        x = col * x_step + (x_step / 2 if row % 2 else 0)
-        y = row * y_step
+for col in range(COLS):
+    for row in range(ROWS):
+        x = col * x_step
+        y = row * y_step + (y_step / 2 if col % 2 == 0 else 0)
         placed = cell.translate((x, y, 0))
         panel = placed if panel is None else panel.fuse(placed)
 
